@@ -1,47 +1,52 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="flex items-center justify-center min-h-screen bg-gray-100">
-    <div class="w-full max-w-md bg-white rounded-xl shadow-md p-8">
-        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Create an Account</h2>
+<div class="flex min-h-screen items-center justify-center bg-gray-100">
+    <div class="bg-white rounded-xl shadow-lg flex flex-col md:flex-row-reverse overflow-hidden w-full max-w-6xl min-h-[600px] md:min-h-[700px]">
 
-        <form method="POST" action="{{ route('register') }}">
-            @csrf
+        <div class="md:w-1/2">
+            <img src="{{ asset('images/register.jpg') }}" alt="Welcome"
+                 class="w-full h-full object-cover">
+        </div>
 
-            <div class="mb-4">
-                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                <input id="name" type="text" name="name" required
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:outline-none">
-            </div>
+        <div class="md:w-1/2 p-12 flex flex-col justify-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Create an Account</h2>
+            <p class="text-gray-600 mb-8">Please fill in the details to register</p>
 
-            <div class="mb-4">
-                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input id="email" type="email" name="email" required
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:outline-none">
-            </div>
+            <form method="POST" action="{{ route('register') }}">
+                @csrf
 
-            <div class="mb-4">
-                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input id="password" type="password" name="password" required
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:outline-none">
-            </div>
+                <div class="mb-6">
+                    <input id="name" type="text" name="name" placeholder="Full Name" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:outline-none text-lg">
+                </div>
 
-            <div class="mb-6">
-                <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                <input id="password_confirmation" type="password" name="password_confirmation" required
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:outline-none">
-            </div>
+                <div class="mb-6">
+                    <input id="email" type="email" name="email" placeholder="Email" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:outline-none text-lg">
+                </div>
 
-            <button type="submit"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition">
-                Register
-            </button>
-        </form>
+                <div class="mb-6">
+                    <input id="password" type="password" name="password" placeholder="Password" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:outline-none text-lg">
+                </div>
 
-        <p class="text-center text-sm text-gray-600 mt-6">
-            Already have an account?
-            <a href="{{ route('login') }}" class="text-blue-600 hover:underline font-medium">Login</a>
-        </p>
+                <div class="mb-6">
+                    <input id="password_confirmation" type="password" name="password_confirmation" placeholder="Confirm Password" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:outline-none text-lg">
+                </div>
+
+                <button type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition mb-4 text-lg">
+                    Register
+                </button>
+            </form>
+
+            <p class="text-center text-sm text-gray-600 mt-8">
+                Already have an account?
+                <a href="{{ route('login') }}" class="text-blue-600 hover:underline font-medium">Login</a>
+            </p>
+        </div>
     </div>
 </div>
 @endsection
