@@ -15,7 +15,7 @@ class Authorization extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
+        'is_admin',
     ];
 
     protected $hidden = [

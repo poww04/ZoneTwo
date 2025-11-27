@@ -56,7 +56,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'customer', 
+            'is_admin' => false,
         ]);
 
         return redirect('/login')->with('success', 'Registration successful. Please login.');
@@ -79,7 +79,6 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'admin',
             'is_admin' => true,
         ]);
 

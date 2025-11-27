@@ -15,7 +15,7 @@ class Registration extends Model
         'name',
         'email',
         'password',
-        'role',
+        'is_admin',
     ];
 
     public function setPasswordAttribute($value)

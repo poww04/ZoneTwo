@@ -26,5 +26,8 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-    Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
+    Route::get('/categories/create', [AdminController::class, 'createCategory'])->name('categories.create');
+    Route::post('/categories', [AdminController::class, 'storeCategory'])->name('categories.store');
+    Route::get('/products/create', [AdminController::class, 'createProduct'])->name('products.create');
+    Route::post('/products', [AdminController::class, 'storeProduct'])->name('products.store');
 });
