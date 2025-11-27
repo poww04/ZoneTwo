@@ -25,6 +25,11 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+            
+            if (Auth::user()->is_admin ?? false) {
+                return redirect()->intended('/admin/dashboard');
+            }
+            
             return redirect()->intended('/dashboard'); 
         }
 
@@ -55,6 +60,30 @@ class AuthController extends Controller
         ]);
 
         return redirect('/login')->with('success', 'Registration successful. Please login.');
+    }
+
+    public function showRegisterAdmin()
+    {
+        return view('auth.register-admin');
+    }
+
+    public function registerAdmin(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6|confirmed'
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'admin',
+            'is_admin' => true,
+        ]);
+
+        return redirect('/login')->with('success', 'Admin registration successful. Please login.');
     }
 
     public function logout(Request $request)
