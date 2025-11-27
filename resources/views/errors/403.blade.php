@@ -12,14 +12,10 @@
         <h2 class="text-2xl font-semibold text-gray-700 mb-4">Access Denied</h2>
         <p class="text-gray-600 mb-6">You don't have permission to access this resource.</p>
         <div class="space-y-3">
-            <a href="{{ route('dashboard') }}" 
-               class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition">
-                Go to Dashboard
-            </a>
-            <a href="/" 
-               class="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition">
-                Go Home
-            </a>
+            <button onclick="window.history.back()" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition">
+                Back 
+            </button>
         </div>
     </div>
 </div>

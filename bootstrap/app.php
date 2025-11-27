@@ -11,9 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias([
-            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
-        ]);
+        // Middleware aliases are now defined in app/Http/Kernel.php
+        $aliases = \App\Http\Kernel::getAliases();
+        $middleware->alias($aliases);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

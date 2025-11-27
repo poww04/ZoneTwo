@@ -13,10 +13,6 @@ class AdminController extends Controller
         return view('admin.dashboard');
     }
 
-    public function settings()
-    {
-        return view('admin.settings');
-    }
 
     public function createCategory()
     {
