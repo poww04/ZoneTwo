@@ -33,39 +33,36 @@ class AdminController extends Controller
     }
     public function createProduct()
     {
-        $categories = Category::all(); // fetch all categories for the select dropdown
+        $categories = Category::all(); 
         return view('admin.create-product', compact('categories'));
     }
 
 
     public function storeProduct(Request $request)
     {
-        // Validate input, including image file
+
         $request->validate([
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
             'description' => 'required|string',  
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048', // max 2MB
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Handle image upload
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('products', 'public'); 
-            // saves to storage/app/public/products and returns path like 'products/filename.jpg'
         } else {
             $imagePath = null;
         }
 
-        // Create the product
         Product::create([
             'category_id' => $request->category_id,
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
             'stock' => $request->stock,
-            'image' => $imagePath, // store path, not full URL
+            'image' => $imagePath, 
         ]);
 
         return redirect()->route('admin.dashboard')->with('success', 'Product created successfully!');
