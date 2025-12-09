@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Order;
 
 class AdminController extends Controller
 {
@@ -59,5 +60,33 @@ class AdminController extends Controller
         ]);
 
         return redirect()->route('admin.dashboard')->with('success', 'Product created successfully!');
+    }
+
+
+
+    public function orders()
+    {
+        $orders = Order::with('items.product')->where('status', 'pending')->get();
+        return view('admin.orders', compact('orders'));
+    }
+
+    public function approveOrder(Order $order)
+    {
+        if($order->status !== 'pending'){
+            return redirect()->back()->with('error', 'Order cannot be approved.');
+        }
+
+        // Reduce stock
+        foreach($order->items as $item){
+            $product = $item->product;
+            $product->stock -= $item->quantity;
+            $product->save();
+        }
+
+        // Change order status
+        $order->status = 'completed';
+        $order->save();
+
+        return redirect()->back()->with('success', 'Order approved successfully.');
     }
 }

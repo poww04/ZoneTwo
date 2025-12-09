@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -25,7 +26,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::delete('/cart/remove/{item}', [CartController::class, 'remove'])->name('cart.remove');
-    
+
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+
+
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
@@ -35,4 +40,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/categories', [AdminController::class, 'storeCategory'])->name('categories.store');
     Route::get('/products/create', [AdminController::class, 'createProduct'])->name('products.create');
     Route::post('/products', [AdminController::class, 'storeProduct'])->name('products.store');
+
+    Route::get('/orders', [AdminController::class, 'orders'])->name('orders');
+    Route::patch('/orders/{order}/approve', [AdminController::class, 'approveOrder'])->name('orders.approve');
+
+
 });

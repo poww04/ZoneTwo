@@ -83,6 +83,15 @@
                     </svg>
                     <span class="font-semibold text-gray-700">Add Product</span>
                 </a>
+                <a href="{{ route('admin.orders') }}" 
+                    class="flex items-center p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition">
+                        <svg class="w-6 h-6 text-gray-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18v18H3V3z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9h18M9 3v18"></path>
+                        </svg>
+                        <span class="font-semibold text-gray-700">Pending Orders</span>
+                </a>
+
                 <a href="/dashboard" 
                    class="flex items-center p-4 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition">
                     <svg class="w-6 h-6 text-gray-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
