@@ -21,7 +21,14 @@
             <tbody>
                 @foreach($cart->items as $item)
                     <tr class="border-b">
-                        <td class="p-3">{{ $item->product->name }}</td>
+                        <td class="p-3 flex items-center space-x-3">
+                            @if($item->product->image)
+                                <img src="{{ asset('storage/' . $item->product->image) }}" 
+                                    alt="{{ $item->product->name }}" 
+                                    class="w-16 h-16 object-cover rounded-lg">
+                            @endif
+                            <span>{{ $item->product->name }}</span>
+                        </td>
                         <td class="p-3">{{ $item->quantity }}</td>
                         <td class="p-3">₱{{ number_format($item->price, 2) }}</td>
                         <td class="p-3">₱{{ number_format($item->quantity * $item->price, 2) }}</td>

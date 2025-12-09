@@ -13,13 +13,6 @@ class AdminController extends Controller
     {
         return view('admin.dashboard');
     }
-
-
-    public function createCategory()
-    {
-        return view('admin.create-category');
-    }
-
     public function storeCategory(Request $request)
     {
         $request->validate([
@@ -33,35 +26,50 @@ class AdminController extends Controller
         return redirect()->route('admin.dashboard')->with('success', 'Category created successfully!');
     }
 
+
+    public function createCategory()
+    {
+        return view('admin.create-category');
+    }
     public function createProduct()
     {
-        $categories = Category::all();
+        $categories = Category::all(); // fetch all categories for the select dropdown
         return view('admin.create-product', compact('categories'));
     }
 
+
     public function storeProduct(Request $request)
     {
+        // Validate input, including image file
         $request->validate([
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'description' => 'required|string',  
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|string|max:255',
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048', // max 2MB
         ]);
 
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('products', 'public'); 
+            // saves to storage/app/public/products and returns path like 'products/filename.jpg'
+        } else {
+            $imagePath = null;
+        }
+
+        // Create the product
         Product::create([
             'category_id' => $request->category_id,
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
             'stock' => $request->stock,
-            'image' => $request->image,
+            'image' => $imagePath, // store path, not full URL
         ]);
 
         return redirect()->route('admin.dashboard')->with('success', 'Product created successfully!');
     }
-
 
 
     public function orders()
@@ -76,14 +84,12 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Order cannot be approved.');
         }
 
-        // Reduce stock
         foreach($order->items as $item){
             $product = $item->product;
             $product->stock -= $item->quantity;
             $product->save();
         }
 
-        // Change order status
         $order->status = 'completed';
         $order->save();
 

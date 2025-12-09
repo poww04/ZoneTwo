@@ -30,7 +30,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('admin.products.store') }}">
+        <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-4">
                     <label for="category_id" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
@@ -61,10 +61,11 @@
                 <div class="mb-4">
                     <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
                     <textarea id="description" 
-                              name="description" 
-                              rows="4"
-                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                              placeholder="Enter product description">{{ old('description') }}</textarea>
+                            name="description" 
+                            rows="4"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Enter product description"
+                            required>{{ old('description') }}</textarea>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4 mb-4">
@@ -94,13 +95,13 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Image URL (Optional)</label>
-                    <input type="text" 
-                           id="image" 
-                           name="image" 
-                           value="{{ old('image') }}"
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                           placeholder="Enter image URL">
+                    <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
+                    <input type="file"
+                        id="image"
+                        name="image"
+                        accept=".jpg,.jpeg,.png"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required>
                 </div>
 
                 <div class="flex gap-4">
