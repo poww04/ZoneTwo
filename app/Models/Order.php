@@ -12,13 +12,11 @@ class Order extends Model
         'status'
     ];
 
-    // Order belongs to a user
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Order has many items
     public function items()
     {
         return $this->hasMany(OrderItem::class);

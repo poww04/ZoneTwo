@@ -10,14 +10,12 @@ use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-    // Show cart page
     public function index()
     {
         $cart = Cart::with('items.product')->where('user_id', Auth::id())->first();
-        return view('cart', compact('cart')); // cart.blade.php
+        return view('cart', compact('cart'));
     }
 
-    // Add item to cart
     public function add(Request $request)
     {
         $request->validate([
@@ -49,7 +47,6 @@ class CartController extends Controller
         return back()->with('success', 'Product added to cart!');
     }
 
-    // Remove item from cart
     public function remove(CartItem $item)
     {
         $cart = Cart::where('user_id', Auth::id())->first();

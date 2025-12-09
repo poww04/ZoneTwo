@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('cart_id')->constrained()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->integer('quantity')->default(1);
-            $table->decimal('price', 8, 2); // price at the time added
+            $table->decimal('price', 8, 2); 
             $table->timestamps();
         });
     }
