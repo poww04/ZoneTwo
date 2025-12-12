@@ -49,6 +49,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/orders', [AdminController::class, 'orders'])->name('orders');
     Route::patch('/orders/{order}/approve', [AdminController::class, 'approveOrder'])->name('orders.approve');
+    Route::get('/orders/manage', [AdminController::class, 'manageOrders'])->name('orders.manage');
+    Route::patch('/orders/{order}/status', [AdminController::class, 'updateOrderStatus'])->name('orders.updateStatus');
 
 
 });

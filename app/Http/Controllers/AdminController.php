@@ -177,10 +177,28 @@ class AdminController extends Controller
                 }
             }
 
-            $order->status = 'completed';
+            $order->status = 'confirm';
             $order->save();
         });
 
         return redirect()->back()->with('success', 'Order approved successfully.');
+    }
+
+    public function manageOrders()
+    {
+        $orders = Order::with('user', 'items.product', 'items.productSize')->latest()->get();
+        return view('admin.manage-orders', compact('orders'));
+    }
+
+    public function updateOrderStatus(Request $request, Order $order)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,cancelled,confirm,on deliver,complete',
+        ]);
+
+        $order->status = $request->status;
+        $order->save();
+
+        return redirect()->back()->with('success', 'Order status updated successfully.');
     }
 }
