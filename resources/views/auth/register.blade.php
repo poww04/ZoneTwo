@@ -27,6 +27,16 @@
                 </div>
 
                 <div class="mb-6">
+                    <input id="address" type="text" name="address" placeholder="Address" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:outline-none text-lg">
+                </div>
+
+                <div class="mb-6">
+                    <input id="phone_number" type="tel" name="phone_number" placeholder="Phone Number" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:outline-none text-lg">
+                </div>
+
+                <div class="mb-6">
                     <input id="password" type="password" name="password" placeholder="Password" required
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:outline-none text-lg">
                 </div>
