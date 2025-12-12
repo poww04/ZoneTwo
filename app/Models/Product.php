@@ -30,4 +30,8 @@ class Product extends Model
         return $this->hasMany(CartItem::class);
     }
 
+    public function sizes()
+    {
+        return $this->hasMany(ProductSize::class);
+    }
 }

@@ -11,9 +11,34 @@ use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $cart = Cart::where('user_id', Auth::id())->with('items.product')->first();
+        $cart = Cart::where('user_id', Auth::id())->with('items.product', 'items.productSize')->first();
+        
+        if (!$cart) {
+            return redirect()->route('cart.index')->with('error', 'Cart is empty.');
+        }
+        
+        $items = $cart->items;
+        
+        // If item_id is provided, filter to show only that item
+        if ($request->has('item_id')) {
+            $itemId = (int) $request->input('item_id');
+            
+            // Verify the item exists and belongs to the user's cart
+            $selectedItem = $items->firstWhere('id', $itemId);
+            
+            if (!$selectedItem) {
+                return redirect()->route('cart.index')->with('error', 'Item not found in cart.');
+            }
+            
+            // Filter to only the selected item
+            $items = collect([$selectedItem]);
+            
+            // Update cart's items relation
+            $cart->setRelation('items', $items);
+        }
+        
         return view('checkout', compact('cart'));
     }
 
@@ -22,16 +47,27 @@ class CheckoutController extends Controller
         $request->validate([
             'payment_method' => 'required|in:cod,gcash',
             'payment_screenshot' => 'required_if:payment_method,gcash|image|mimes:jpeg,png,jpg|max:2048',
+            'item_ids' => 'nullable|array',
+            'item_ids.*' => 'exists:cart_items,id',
         ]);
 
-        $cart = Cart::where('user_id', Auth::id())->with('items.product')->first();
+        $cart = Cart::where('user_id', Auth::id())->with('items.product', 'items.productSize')->first();
 
         if(!$cart || $cart->items->count() === 0){
             return redirect()->route('cart.index')->with('error', 'Cart is empty.');
         }
 
-        DB::transaction(function() use ($cart, $request) {
-            $totalAmount = $cart->items->sum(fn($i) => $i->price * $i->quantity);
+        // Filter items if specific item_ids are provided
+        $itemsToCheckout = $cart->items;
+        if ($request->has('item_ids') && !empty($request->item_ids)) {
+            $itemsToCheckout = $cart->items->whereIn('id', $request->item_ids);
+            if ($itemsToCheckout->isEmpty()) {
+                return redirect()->route('cart.index')->with('error', 'Selected items not found.');
+            }
+        }
+
+        DB::transaction(function() use ($cart, $request, $itemsToCheckout) {
+            $totalAmount = $itemsToCheckout->sum(fn($i) => $i->price * $i->quantity);
             
             $paymentScreenshot = null;
             if ($request->payment_method === 'gcash' && $request->hasFile('payment_screenshot')) {
@@ -46,17 +82,24 @@ class CheckoutController extends Controller
                 'payment_screenshot' => $paymentScreenshot,
             ]);
 
-            foreach($cart->items as $item){
+            foreach($itemsToCheckout as $item){
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $item->product->id,
+                    'product_size_id' => $item->product_size_id,
                     'quantity' => $item->quantity,
                     'price' => $item->price,
                 ]);
             }
 
-            $cart->items()->delete();
-            $cart->delete();
+            // Delete only the checked out items from cart
+            $itemIds = $itemsToCheckout->pluck('id')->toArray();
+            $cart->items()->whereIn('id', $itemIds)->delete();
+            
+            // Delete cart if no items left
+            if ($cart->items()->count() === 0) {
+                $cart->delete();
+            }
         });
 
         return redirect()->route('dashboard')->with('success', 'Your order has been submitted and is pending admin approval.');

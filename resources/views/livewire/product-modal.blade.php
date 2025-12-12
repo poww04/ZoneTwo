@@ -20,6 +20,36 @@
                     <p class="text-black mb-4">{{ $product->description ?: 'No description available.' }}</p>
                     <p class="text-xl font-semibold text-yellow-500 mb-6">₱{{ number_format($product->price, 2) }} per unit</p>
 
+                    @if(session('error'))
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    {{-- Size Selection --}}
+                    @if($product->sizes && $product->sizes->count() > 0)
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-black mb-2">Size</label>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($product->sizes as $size)
+                                    <button type="button"
+                                            wire:click="$set('selectedSizeId', {{ $size->id }})"
+                                            class="px-4 py-2 rounded-lg border-2 font-semibold transition
+                                                @if($selectedSizeId == $size->id)
+                                                    bg-yellow-500 border-black text-black
+                                                @elseif($size->stock == 0)
+                                                    bg-gray-200 border-gray-400 text-gray-400 cursor-not-allowed
+                                                @else
+                                                    bg-white border-black text-black hover:bg-yellow-100
+                                                @endif
+                                                {{ $size->stock == 0 ? 'opacity-50' : '' }}">
+                                        {{ $size->size }}
+                                    </button>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
                     {{-- Quantity --}}
                     <div class="mb-6">
                         <label for="productQuantity" class="block text-sm font-medium text-black mb-2">Quantity</label>
@@ -35,17 +65,27 @@
                                    wire:model.live="quantity"
                                    wire:change="updateQuantity"
                                    min="1" 
-                                   max="{{ $product->stock }}"
+                                   max="{{ $this->getMaxStock() }}"
                                    class="w-20 text-center border-2 border-black rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500">
 
-                            @if($quantity < $product->stock)
+                            @if($quantity < $this->getMaxStock())
                                 <button wire:click="increment" 
                                         class="bg-white border-2 border-black hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded-lg transition">+</button>
                             @else
                                 <span class="bg-white border-2 border-gray-400 text-gray-400 font-bold py-2 px-4 rounded-lg cursor-not-allowed">+</span>
                             @endif
                         </div>
-                        <p class="text-sm text-black mt-2">Available stock: {{ $product->stock }}</p>
+                        <p class="text-sm text-black mt-2">
+                            Available stock: 
+                            @if($selectedSizeId)
+                                @php
+                                    $selectedSize = $product->sizes->firstWhere('id', $selectedSizeId);
+                                @endphp
+                                {{ $selectedSize ? $selectedSize->stock : 0 }}
+                            @else
+                                {{ $product->stock }}
+                            @endif
+                        </p>
                     </div>
 
                     {{-- Total Price --}}

@@ -26,7 +26,13 @@
                         <td class="p-3">
                             <ul>
                                 @foreach($order->items as $item)
-                                    <li>{{ $item->product->name }} x {{ $item->quantity }}</li>
+                                    <li>
+                                        {{ $item->product->name }}
+                                        @if($item->productSize)
+                                            (Size: {{ $item->productSize->size }})
+                                        @endif
+                                        x {{ $item->quantity }}
+                                    </li>
                                 @endforeach
                             </ul>
                         </td>

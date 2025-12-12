@@ -43,6 +43,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/products/create', [AdminController::class, 'createProduct'])->name('products.create');
     Route::post('/categories', [AdminController::class, 'storeCategory'])->name('categories.store');
     Route::post('/products', [AdminController::class, 'storeProduct'])->name('products.store');
+    Route::get('/products/restock', [AdminController::class, 'restockProduct'])->name('products.restock');
+    Route::get('/products/{product}/restock', [AdminController::class, 'showRestockForm'])->name('products.restock.form');
+    Route::post('/products/{product}/restock', [AdminController::class, 'updateStock'])->name('products.restock.update');
 
     Route::get('/orders', [AdminController::class, 'orders'])->name('orders');
     Route::patch('/orders/{order}/approve', [AdminController::class, 'approveOrder'])->name('orders.approve');

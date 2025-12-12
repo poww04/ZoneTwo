@@ -56,6 +56,12 @@
                                 <p class="text-sm text-black mb-4">{{ $item->product->description ? Str::limit($item->product->description, 100) : 'No description available.' }}</p>
                                 
                                 <div class="flex flex-wrap items-center gap-4 mb-4">
+                                    @if($item->productSize)
+                                        <div>
+                                            <span class="text-sm text-black font-medium">Size: </span>
+                                            <span class="text-lg font-bold text-black">{{ $item->productSize->size }}</span>
+                                        </div>
+                                    @endif
                                     <div>
                                         <span class="text-sm text-black font-medium">Quantity: </span>
                                         <span class="text-lg font-bold text-black">{{ $item->quantity }}</span>
@@ -82,11 +88,9 @@
                                             Remove
                                         </button>
                                     </form>
-                                    <form method="GET" action="{{ route('checkout.index') }}" class="inline">
-                                        <button class="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg transition border-2 border-black">
-                                            Checkout
-                                        </button>
-                                    </form>
+                                    <a href="{{ route('checkout.index', ['item_id' => $item->id]) }}" class="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg transition border-2 border-black inline-block">
+                                        Checkout
+                                    </a>
                                 </div>
                             </div>
                         </div>

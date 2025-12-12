@@ -24,6 +24,9 @@
         @else
             <form method="POST" action="{{ route('checkout.process') }}" enctype="multipart/form-data" id="checkout-form">
                 @csrf
+                @if(request('item_id'))
+                    <input type="hidden" name="item_ids[]" value="{{ request('item_id') }}">
+                @endif
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {{-- Left Side: Order Details and Items --}}
                     <div class="lg:col-span-2 space-y-6">
@@ -132,6 +135,12 @@
                                 <div class="flex-grow w-full md:w-auto text-center md:text-left">
                                     <h3 class="text-xl font-bold text-black mb-2">{{ $item->product->name }}</h3>
                                     <div class="flex flex-wrap justify-center md:justify-start items-center gap-4">
+                                        @if($item->productSize)
+                                            <div>
+                                                <span class="text-sm text-black font-medium">Size: </span>
+                                                <span class="text-lg font-bold text-black">{{ $item->productSize->size }}</span>
+                                            </div>
+                                        @endif
                                         <div>
                                             <span class="text-sm text-black font-medium">Quantity: </span>
                                             <span class="text-lg font-bold text-black">{{ $item->quantity }}</span>
@@ -160,7 +169,7 @@
                             
                             <div class="space-y-4 mb-6">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-black font-medium">Items ({{ $cart->items->count() }})</span>
+                                    <span class="text-black font-medium">Items ({{ $cart->items->count() }} {{ Str::plural('item', $cart->items->count()) }})</span>
                                     <span class="text-lg font-bold text-black">₱{{ number_format($cart->items->sum(fn($i) => $i->price * $i->quantity), 2) }}</span>
                                 </div>
                                 <div class="flex justify-between items-center">

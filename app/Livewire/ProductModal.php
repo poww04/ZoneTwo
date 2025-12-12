@@ -13,6 +13,7 @@ class ProductModal extends Component
     public $productId;
     public $categoryId;
     public $quantity = 1;
+    public $selectedSizeId = null;
     public $product;
     public $showModal = false;
 
@@ -28,10 +29,14 @@ class ProductModal extends Component
         $this->productId = $productId;
         
         if ($this->productId) {
-            $this->product = Product::find($this->productId);
+            $this->product = Product::with('sizes')->find($this->productId);
             if ($this->product) {
                 $requestQuantity = request('quantity', 1);
                 $this->quantity = max(1, min((int)$requestQuantity, $this->product->stock));
+                // Set default size if product has sizes
+                if ($this->product->sizes->count() > 0) {
+                    $this->selectedSizeId = $this->product->sizes->first()->id;
+                }
                 $this->showModal = true;
             }
         }
@@ -40,9 +45,15 @@ class ProductModal extends Component
     public function updatedProductId($value)
     {
         if ($value) {
-            $this->product = Product::find($value);
+            $this->product = Product::with('sizes')->find($value);
             if ($this->product) {
-                $this->quantity = min(1, $this->product->stock);
+                $this->quantity = 1;
+                // Set default size if product has sizes
+                if ($this->product->sizes->count() > 0) {
+                    $this->selectedSizeId = $this->product->sizes->first()->id;
+                } else {
+                    $this->selectedSizeId = null;
+                }
                 $this->showModal = true;
             }
         } else {
@@ -50,9 +61,17 @@ class ProductModal extends Component
         }
     }
 
+    public function updatedSelectedSizeId()
+    {
+        // Reset quantity when size changes
+        $this->quantity = 1;
+        $this->updateQuantity();
+    }
+
     public function increment()
     {
-        if ($this->product && $this->quantity < $this->product->stock) {
+        $maxStock = $this->getMaxStock();
+        if ($this->product && $this->quantity < $maxStock) {
             $this->quantity++;
         }
     }
@@ -67,8 +86,25 @@ class ProductModal extends Component
     public function updateQuantity()
     {
         if ($this->product) {
-            $this->quantity = max(1, min($this->quantity, $this->product->stock));
+            $maxStock = $this->getMaxStock();
+            $this->quantity = max(1, min($this->quantity, $maxStock));
         }
+    }
+
+    public function getMaxStock()
+    {
+        if (!$this->product) {
+            return 0;
+        }
+
+        // If size is selected, return stock for that size
+        if ($this->selectedSizeId) {
+            $size = $this->product->sizes->firstWhere('id', $this->selectedSizeId);
+            return $size ? $size->stock : 0;
+        }
+
+        // Otherwise return total product stock
+        return $this->product->stock;
     }
 
     public function close()
@@ -87,19 +123,40 @@ class ProductModal extends Component
             return;
         }
 
+        // Validate size selection if product has sizes
+        if ($this->product->sizes->count() > 0 && !$this->selectedSizeId) {
+            session()->flash('error', 'Please select a size.');
+            return;
+        }
+
+        // Check stock availability
+        $maxStock = $this->getMaxStock();
+        if ($this->quantity > $maxStock) {
+            session()->flash('error', 'Insufficient stock available.');
+            return;
+        }
+
         $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
 
+        // Find existing cart item with same product and size
         $item = CartItem::where('cart_id', $cart->id)
                         ->where('product_id', $this->product->id)
+                        ->where('product_size_id', $this->selectedSizeId)
                         ->first();
 
         if ($item) {
-            $item->quantity += $this->quantity;
+            $newQuantity = $item->quantity + $this->quantity;
+            if ($newQuantity > $maxStock) {
+                session()->flash('error', 'Cannot add more items. Stock limit reached.');
+                return;
+            }
+            $item->quantity = $newQuantity;
             $item->save();
         } else {
             CartItem::create([
                 'cart_id' => $cart->id,
                 'product_id' => $this->product->id,
+                'product_size_id' => $this->selectedSizeId,
                 'quantity' => $this->quantity,
                 'price' => $this->product->price
             ]);
@@ -108,6 +165,7 @@ class ProductModal extends Component
         $this->showModal = false;
         $this->productId = null;
         $this->product = null;
+        $this->selectedSizeId = null;
         
         session()->flash('success', 'Product added to cart!');
         return $this->redirect(route('dashboard', ['category_id' => $this->categoryId]), navigate: true);
