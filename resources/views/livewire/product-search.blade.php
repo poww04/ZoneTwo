@@ -26,25 +26,25 @@
     </div>
 
     @if($products->count() > 0)
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($products as $product)
                 <a href="{{ route('dashboard', ['category_id' => $categoryId, 'product_id' => $product->id]) }}"
-                   class="bg-white border-2 border-black rounded-lg p-4 hover:border-yellow-500 hover:bg-yellow-50 hover:shadow-md transition-all cursor-pointer block flex flex-col h-full">
+                   class="bg-white hover:bg-yellow-50 transition-all cursor-pointer block flex flex-col h-full">
                     @if($product->image)
-                        <div class="mb-3">
+                        <div class="mb-4 w-full overflow-hidden" style="aspect-ratio: 3/4;">
                             <img src="{{ asset('storage/' . $product->image) }}"
                                  alt="{{ $product->name }}"
-                                 class="w-full h-40 object-cover rounded-lg">
+                                 class="w-full h-full object-cover object-center">
                         </div>
                     @else
-                        <div class="mb-3 bg-black rounded-lg h-40 flex items-center justify-center">
+                        <div class="mb-4 bg-black w-full flex items-center justify-center overflow-hidden" style="aspect-ratio: 3/4;">
                             <svg class="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
                         </div>
                     @endif
 
-                    <div class="flex-grow">
+                    <div class="flex-grow px-2">
                         <h3 class="font-semibold text-black text-lg mb-2 line-clamp-2">{{ $product->name }}</h3>
                         
                         @if($product->description)
@@ -52,7 +52,7 @@
                         @endif
                     </div>
 
-                    <div class="flex justify-between items-baseline mt-auto pt-3 border-t-2 border-black">
+                    <div class="flex justify-between items-baseline mt-auto pt-3 px-2">
                         <p class="text-lg font-bold text-yellow-500">₱{{ number_format($product->price, 2) }}</p>
                         <p class="text-xs text-black font-medium {{ $product->stock > 0 ? '' : 'text-red-600' }}">
                             {{ $product->stock > 0 ? "Stock: {$product->stock}" : 'Out of Stock' }}
