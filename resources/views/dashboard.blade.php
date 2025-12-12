@@ -1,73 +1,98 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen bg-gray-100 p-6">
-    <div class="max-w-7xl mx-auto">
+@php $selectedCategoryId = request('category_id'); @endphp
 
+{{-- Topbar --}}
+<nav class="bg-white border-b border-black sticky top-0 z-50 shadow-sm">
+    <div class="w-full px-6 lg:px-12">
+        <div class="flex items-center justify-between h-14">
+            {{-- Left: ZoneTwo Logo --}}
+            <div class="flex-shrink-0 flex items-center">
+                <a href="{{ route('dashboard') }}" class="text-3xl font-aesthetic text-black hover:text-yellow-500 transition">
+                    ZoneTwo
+                </a>
+            </div>
+
+            {{-- Center: Categories Navigation --}}
+            <div class="hidden md:flex items-center space-x-8 flex-1 justify-center">
+                @if(\App\Models\Category::count() > 0)
+                    @foreach(\App\Models\Category::all() as $category)
+                        <a href="{{ route('dashboard', ['category_id' => $category->id]) }}" 
+                           class="text-base font-normal text-black hover:text-yellow-500 {{ $selectedCategoryId == $category->id ? 'border-b-2 border-yellow-500 pb-1' : '' }} transition whitespace-nowrap">
+                            {{ $category->name }}
+                        </a>
+                    @endforeach
+                @else
+                    <span class="text-base text-black font-normal">No categories available</span>
+                @endif
+            </div>
+
+            {{-- Right: Icons (Logout, Cart) --}}
+            <div class="flex items-center space-x-0 flex-shrink-0">
+                {{-- Logout Button --}}
+                <form method="POST" action="{{ route('logout') }}" class="inline flex items-center">
+                    @csrf
+                    <button type="submit" class="text-black hover:text-yellow-500 transition p-2" title="Logout">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                        </svg>
+                    </button>
+                </form>
+
+                {{-- Vertical Separator --}}
+                <div class="h-6 w-px bg-black mx-1"></div>
+
+                {{-- Shopping Cart Icon --}}
+                <a href="{{ route('cart.index') }}" class="relative text-black hover:text-yellow-500 transition p-2 flex items-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    @php
+                        $cartCount = \App\Models\Cart::where('user_id', Auth::id())->first()?->items()->count() ?? 0;
+                    @endphp
+                    @if($cartCount > 0)
+                        <span class="absolute top-1 right-1 bg-yellow-500 text-black text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium">{{ $cartCount }}</span>
+                    @endif
+                </a>
+            </div>
+        </div>
+
+        {{-- Mobile Categories Menu --}}
+        <div class="md:hidden border-t border-black py-2">
+            <div class="flex flex-wrap gap-2">
+                @if(\App\Models\Category::count() > 0)
+                    @foreach(\App\Models\Category::all() as $category)
+                        <a href="{{ route('dashboard', ['category_id' => $category->id]) }}" 
+                           class="text-xs px-2.5 py-1 rounded-full {{ $selectedCategoryId == $category->id ? 'bg-yellow-500 text-black' : 'bg-white border border-black text-black hover:bg-yellow-500' }} transition">
+                            {{ $category->name }}
+                        </a>
+                    @endforeach
+                @endif
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="min-h-screen bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {{-- Success message --}}
         @if(session('success'))
-            <div class="mb-6 bg-green-500 text-white px-6 py-4 rounded-lg shadow-md">
+            <div class="mb-6 bg-yellow-500 text-black px-6 py-4 rounded-lg shadow-md border-2 border-black">
                 {{ session('success') }}
             </div>
         @endif
 
-        {{-- Header --}}
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-800">Welcome to ZoneTwo!</h1>
-                    <p class="text-gray-600 mt-2">Welcome back, {{ Auth::user()->name }}!</p>
-                </div>
-
-                <div class="flex items-center space-x-3">
-                    <a href="{{ route('cart.index') }}"
-                        class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg transition">
-                        Cart
-                        @php
-                            $cartCount = \App\Models\Cart::where('user_id', Auth::id())->first()?->items()->count() ?? 0;
-                        @endphp
-                        @if($cartCount > 0)
-                            ({{ $cartCount }})
-                        @endif
-                    </a>
-
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit"
-                                class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition">
-                            Logout
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        {{-- Categories --}}
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Categories</h2>
-            @php $selectedCategoryId = request('category_id'); @endphp
-            @if(\App\Models\Category::count() > 0)
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    @foreach(\App\Models\Category::all() as $category)
-                        <a href="{{ route('dashboard', ['category_id' => $category->id]) }}" 
-                           class="border-2 {{ $selectedCategoryId == $category->id ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }} rounded-lg p-4 hover:border-blue-500 hover:bg-blue-50 transition text-center">
-                            <h3 class="text-lg font-semibold text-gray-800 hover:text-blue-600">{{ $category->name }}</h3>
-                        </a>
-                    @endforeach
-                </div>
+        {{-- Product Search / Listing via Livewire --}}
+        <div id="product-search">
+            @if($selectedCategoryId)
+                @livewire('product-search', ['categoryId' => $selectedCategoryId])
             @else
-                <p class="text-gray-600">No categories available yet.</p>
+                <div class="bg-white rounded-lg shadow-md p-6 border-2 border-black">
+                    <p class="text-black text-center">Select a category from the navigation above to view products.</p>
+                </div>
             @endif
         </div>
-
-        {{-- Product Search / Listing via Livewire --}}
-        @if($selectedCategoryId)
-            @livewire('product-search', ['categoryId' => $selectedCategoryId])
-        @else
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <p class="text-gray-600 text-center">Click on a category above to view products.</p>
-            </div>
-        @endif
 
     </div>
 </div>
@@ -75,101 +100,6 @@
 {{-- Product Modal --}}
 @php
     $selectedProductId = request('product_id');
-    $quantity = max(1, min((int)request('quantity', 1), 999));
 @endphp
-
-@if($selectedProductId && !session('success'))
-    @php
-        $selectedProduct = \App\Models\Product::find($selectedProductId);
-        $maxQuantity = $selectedProduct ? min($quantity, $selectedProduct->stock) : $quantity;
-        $totalPrice = $selectedProduct ? $selectedProduct->price * $maxQuantity : 0;
-    @endphp
-
-    @if($selectedProduct)
-        <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="p-6">
-
-                    <div class="flex justify-end mb-4">
-                        <a href="{{ route('dashboard', ['category_id' => $selectedCategoryId]) }}" 
-                           class="text-gray-500 hover:text-gray-700 text-2xl font-bold">&times;</a>
-                    </div>
-
-                    @if($selectedProduct->image)
-                        <div class="mb-4">
-                            <img src="{{ asset('storage/' . $selectedProduct->image) }}" 
-                                 alt="{{ $selectedProduct->name }}" 
-                                 class="w-full h-64 object-cover rounded-lg">
-                        </div>
-                    @endif
-
-                    <h2 class="text-3xl font-bold text-gray-800 mb-3">{{ $selectedProduct->name }}</h2>
-                    <p class="text-gray-600 mb-4">{{ $selectedProduct->description ?: 'No description available.' }}</p>
-                    <p class="text-xl font-semibold text-blue-600 mb-6">₱{{ number_format($selectedProduct->price, 2) }} per unit</p>
-
-                    {{-- Quantity --}}
-                    <div class="mb-6">
-                        <label for="productQuantity" class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
-                        <div class="flex items-center space-x-4">
-                            @if($maxQuantity > 1)
-                                <a href="{{ route('dashboard', ['category_id' => $selectedCategoryId, 'product_id' => $selectedProductId, 'quantity' => max(1, $maxQuantity - 1)]) }}" 
-                                   class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg transition">-</a>
-                            @else
-                                <span class="bg-gray-100 text-gray-400 font-bold py-2 px-4 rounded-lg cursor-not-allowed">-</span>
-                            @endif
-
-                            <form method="GET" action="{{ route('dashboard') }}" class="inline-flex items-center">
-                                <input type="hidden" name="category_id" value="{{ $selectedCategoryId }}">
-                                <input type="hidden" name="product_id" value="{{ $selectedProductId }}">
-                                <input type="number" 
-                                       name="quantity"
-                                       value="{{ $maxQuantity }}" 
-                                       min="1" 
-                                       max="{{ $selectedProduct->stock }}"
-                                       class="w-20 text-center border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <button type="submit" class="ml-2 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold py-2 px-3 rounded-lg transition">
-                                    Update
-                                </button>
-                            </form>
-
-                            @if($maxQuantity < $selectedProduct->stock)
-                                <a href="{{ route('dashboard', ['category_id' => $selectedCategoryId, 'product_id' => $selectedProductId, 'quantity' => min($selectedProduct->stock, $maxQuantity + 1)]) }}" 
-                                   class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg transition">+</a>
-                            @else
-                                <span class="bg-gray-100 text-gray-400 font-bold py-2 px-4 rounded-lg cursor-not-allowed">+</span>
-                            @endif
-                        </div>
-                        <p class="text-sm text-gray-500 mt-2">Available stock: {{ $selectedProduct->stock }}</p>
-                    </div>
-
-                    {{-- Total Price --}}
-                    <div class="border-t pt-4">
-                        <div class="flex justify-between items-center">
-                            <span class="text-lg font-semibold text-gray-800">Total Price:</span>
-                            <span class="text-2xl font-bold text-blue-600">₱{{ number_format($totalPrice, 2) }}</span>
-                        </div>
-                    </div>
-
-                    {{-- Actions --}}
-                    <div class="mt-6 flex space-x-4">
-                        <a href="{{ route('dashboard', ['category_id' => $selectedCategoryId]) }}" 
-                           class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition text-center">
-                            Close
-                        </a>
-                        <form method="POST" action="{{ route('cart.add') }}" class="flex-1">
-                            @csrf
-                            <input type="hidden" name="product_id" value="{{ $selectedProductId }}">
-                            <input type="hidden" name="quantity" value="{{ $maxQuantity }}">
-                            <button type="submit"
-                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition">
-                                Add to Cart
-                            </button>
-                        </form>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    @endif
-@endif
+@livewire('product-modal', ['productId' => $selectedProductId, 'categoryId' => $selectedCategoryId])
 @endsection

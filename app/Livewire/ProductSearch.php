@@ -17,8 +17,7 @@ class ProductSearch extends Component
 
     public function updatingSearch()
     {
-        // This method is called when the search property is being updated
-        // Useful for resetting pagination or other side effects
+
     }
 
     public function render()
