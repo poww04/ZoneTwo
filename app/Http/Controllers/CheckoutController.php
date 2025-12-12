@@ -19,19 +19,31 @@ class CheckoutController extends Controller
 
     public function process(Request $request)
     {
+        $request->validate([
+            'payment_method' => 'required|in:cod,gcash',
+            'payment_screenshot' => 'required_if:payment_method,gcash|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
         $cart = Cart::where('user_id', Auth::id())->with('items.product')->first();
 
         if(!$cart || $cart->items->count() === 0){
             return redirect()->route('cart.index')->with('error', 'Cart is empty.');
         }
 
-        DB::transaction(function() use ($cart) {
-
+        DB::transaction(function() use ($cart, $request) {
             $totalAmount = $cart->items->sum(fn($i) => $i->price * $i->quantity);
+            
+            $paymentScreenshot = null;
+            if ($request->payment_method === 'gcash' && $request->hasFile('payment_screenshot')) {
+                $paymentScreenshot = $request->file('payment_screenshot')->store('payment-screenshots', 'public');
+            }
+            
             $order = Order::create([
                 'user_id' => Auth::id(),
                 'total_amount' => $totalAmount,
                 'status' => 'pending',
+                'payment_method' => $request->payment_method,
+                'payment_screenshot' => $paymentScreenshot,
             ]);
 
             foreach($cart->items as $item){
