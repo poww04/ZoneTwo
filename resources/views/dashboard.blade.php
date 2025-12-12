@@ -4,12 +4,14 @@
 <div class="min-h-screen bg-gray-100 p-6">
     <div class="max-w-7xl mx-auto">
 
+        {{-- Success message --}}
         @if(session('success'))
             <div class="mb-6 bg-green-500 text-white px-6 py-4 rounded-lg shadow-md">
                 {{ session('success') }}
             </div>
         @endif
 
+        {{-- Header --}}
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <div class="flex justify-between items-center">
                 <div>
@@ -20,14 +22,15 @@
                 <div class="flex items-center space-x-3">
                     <a href="{{ route('cart.index') }}"
                         class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg transition">
-                            Cart
-                            @php
-                                $cartCount = \App\Models\Cart::where('user_id', Auth::id())->first()?->items()->count() ?? 0;
-                            @endphp
-                            @if($cartCount > 0)
-                                ({{ $cartCount }})
-                            @endif
+                        Cart
+                        @php
+                            $cartCount = \App\Models\Cart::where('user_id', Auth::id())->first()?->items()->count() ?? 0;
+                        @endphp
+                        @if($cartCount > 0)
+                            ({{ $cartCount }})
+                        @endif
                     </a>
+
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit"
@@ -39,14 +42,12 @@
             </div>
         </div>
 
-
+        {{-- Categories --}}
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <h2 class="text-2xl font-bold text-gray-800 mb-4">Categories</h2>
+            @php $selectedCategoryId = request('category_id'); @endphp
             @if(\App\Models\Category::count() > 0)
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    @php
-                        $selectedCategoryId = request('category_id');
-                    @endphp
                     @foreach(\App\Models\Category::all() as $category)
                         <a href="{{ route('dashboard', ['category_id' => $category->id]) }}" 
                            class="border-2 {{ $selectedCategoryId == $category->id ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }} rounded-lg p-4 hover:border-blue-500 hover:bg-blue-50 transition text-center">
@@ -59,47 +60,23 @@
             @endif
         </div>
 
-        @php
-            $selectedCategoryId = request('category_id');
-            $selectedProductId = request('product_id');
-            $quantity = max(1, min((int)request('quantity', 1), 999));
-        @endphp
-
+        {{-- Product Search / Listing via Livewire --}}
         @if($selectedCategoryId)
-            @php
-                $selectedCategory = \App\Models\Category::find($selectedCategoryId);
-                $products = \App\Models\Product::where('category_id', $selectedCategoryId)->get();
-            @endphp
-                @if($products->count() > 0)
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        @foreach($products as $product)
-                            <a href="{{ route('dashboard', ['category_id' => $selectedCategoryId, 'product_id' => $product->id]) }}" 
-                            class="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:bg-blue-50 transition cursor-pointer block">
-
-                                <p class="font-medium text-gray-800 text-lg mb-2">{{ $product->name }}</p>
-
-                                @if($product->image)
-                                    <div class="mb-2">
-                                        <img src="{{ asset('storage/' . $product->image) }}" 
-                                            alt="{{ $product->name }}" 
-                                            class="w-full h-40 object-cover rounded-lg">
-                                    </div>
-                                @endif
-
-
-                                <p class="text-lg font-semibold text-blue-600 mb-1">₱{{ number_format($product->price, 2) }}</p>
-                                <p class="text-xs text-gray-500">Stock: {{ $product->stock }}</p>
-                            </a>
-                        @endforeach
-                    </div>
-                @endif
+            @livewire('product-search', ['categoryId' => $selectedCategoryId])
         @else
             <div class="bg-white rounded-lg shadow-md p-6">
                 <p class="text-gray-600 text-center">Click on a category above to view products.</p>
             </div>
         @endif
+
     </div>
 </div>
+
+{{-- Product Modal --}}
+@php
+    $selectedProductId = request('product_id');
+    $quantity = max(1, min((int)request('quantity', 1), 999));
+@endphp
 
 @if($selectedProductId && !session('success'))
     @php
@@ -107,6 +84,7 @@
         $maxQuantity = $selectedProduct ? min($quantity, $selectedProduct->stock) : $quantity;
         $totalPrice = $selectedProduct ? $selectedProduct->price * $maxQuantity : 0;
     @endphp
+
     @if($selectedProduct)
         <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -120,16 +98,16 @@
                     @if($selectedProduct->image)
                         <div class="mb-4">
                             <img src="{{ asset('storage/' . $selectedProduct->image) }}" 
-                                alt="{{ $selectedProduct->name }}" 
-                                class="w-full h-64 object-cover rounded-lg">
+                                 alt="{{ $selectedProduct->name }}" 
+                                 class="w-full h-64 object-cover rounded-lg">
                         </div>
                     @endif
-
 
                     <h2 class="text-3xl font-bold text-gray-800 mb-3">{{ $selectedProduct->name }}</h2>
                     <p class="text-gray-600 mb-4">{{ $selectedProduct->description ?: 'No description available.' }}</p>
                     <p class="text-xl font-semibold text-blue-600 mb-6">₱{{ number_format($selectedProduct->price, 2) }} per unit</p>
 
+                    {{-- Quantity --}}
                     <div class="mb-6">
                         <label for="productQuantity" class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
                         <div class="flex items-center space-x-4">
@@ -139,7 +117,7 @@
                             @else
                                 <span class="bg-gray-100 text-gray-400 font-bold py-2 px-4 rounded-lg cursor-not-allowed">-</span>
                             @endif
-                            
+
                             <form method="GET" action="{{ route('dashboard') }}" class="inline-flex items-center">
                                 <input type="hidden" name="category_id" value="{{ $selectedCategoryId }}">
                                 <input type="hidden" name="product_id" value="{{ $selectedProductId }}">
@@ -153,7 +131,7 @@
                                     Update
                                 </button>
                             </form>
-                            
+
                             @if($maxQuantity < $selectedProduct->stock)
                                 <a href="{{ route('dashboard', ['category_id' => $selectedCategoryId, 'product_id' => $selectedProductId, 'quantity' => min($selectedProduct->stock, $maxQuantity + 1)]) }}" 
                                    class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg transition">+</a>
@@ -164,6 +142,7 @@
                         <p class="text-sm text-gray-500 mt-2">Available stock: {{ $selectedProduct->stock }}</p>
                     </div>
 
+                    {{-- Total Price --}}
                     <div class="border-t pt-4">
                         <div class="flex justify-between items-center">
                             <span class="text-lg font-semibold text-gray-800">Total Price:</span>
@@ -171,6 +150,7 @@
                         </div>
                     </div>
 
+                    {{-- Actions --}}
                     <div class="mt-6 flex space-x-4">
                         <a href="{{ route('dashboard', ['category_id' => $selectedCategoryId]) }}" 
                            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition text-center">
@@ -181,7 +161,7 @@
                             <input type="hidden" name="product_id" value="{{ $selectedProductId }}">
                             <input type="hidden" name="quantity" value="{{ $maxQuantity }}">
                             <button type="submit"
-                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition">
+                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition">
                                 Add to Cart
                             </button>
                         </form>
