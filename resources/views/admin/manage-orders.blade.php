@@ -77,19 +77,33 @@
                                     {{ $order->created_at->format('M d, Y h:i A') }}
                                 </td>
                                 <td class="p-3">
-                                    <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="inline-block">
-                                        @csrf
-                                        @method('PATCH')
-                                        <select name="status" 
-                                                onchange="this.form.submit()" 
-                                                class="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                            <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Pending</option>
-                                            <option value="confirm" {{ $order->status === 'confirm' ? 'selected' : '' }}>Confirm</option>
-                                            <option value="on deliver" {{ $order->status === 'on deliver' ? 'selected' : '' }}>On Deliver</option>
-                                            <option value="complete" {{ $order->status === 'complete' ? 'selected' : '' }}>Complete</option>
-                                            <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                                        </select>
-                                    </form>
+                                    @if($order->status === 'confirm')
+                                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="inline-block">
+                                            @csrf
+                                            @method('PATCH')
+                                            <select name="status" 
+                                                    onchange="this.form.submit()" 
+                                                    class="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                <option value="confirm" selected>Confirm</option>
+                                                <option value="on deliver">On Deliver</option>
+                                            </select>
+                                        </form>
+                                    @elseif($order->status === 'on deliver')
+                                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="inline-block">
+                                            @csrf
+                                            @method('PATCH')
+                                            <select name="status" 
+                                                    onchange="this.form.submit()" 
+                                                    class="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                <option value="on deliver" selected>On Deliver</option>
+                                                <option value="complete">Complete</option>
+                                            </select>
+                                        </form>
+                                    @elseif($order->status === 'complete')
+                                        <span class="text-gray-600 text-sm">Completed</span>
+                                    @else
+                                        <span class="text-gray-400 text-sm">No action available</span>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
