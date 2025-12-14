@@ -43,6 +43,22 @@
                         </span>
                     @endif
                 </a>
+                <a href="{{ route('orders.index', ['status' => 'declined']) }}" 
+                   class="relative px-4 py-2 rounded-lg border-2 border-black font-semibold text-sm transition
+                   {{ ($selectedStatus ?? 'all') === 'declined' ? 'bg-yellow-500 text-black' : 'bg-white text-black hover:bg-yellow-50' }}">
+                    Declined
+                    @php
+                        $currentDeclinedCount = $statusCounts['declined'] ?? 0;
+                        $viewedDeclinedCount = $viewedStatusCounts['declined'] ?? 0;
+                        $newDeclinedCount = $currentDeclinedCount - $viewedDeclinedCount;
+                        $showDeclinedBadge = $newDeclinedCount > 0;
+                    @endphp
+                    @if($showDeclinedBadge)
+                        <span class="absolute -top-2 -right-2 bg-yellow-500 text-black text-xs rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center font-medium border-2 border-black">
+                            {{ $newDeclinedCount }}
+                        </span>
+                    @endif
+                </a>
                 <a href="{{ route('orders.index', ['status' => 'confirm']) }}" 
                    class="relative px-4 py-2 rounded-lg border-2 border-black font-semibold text-sm transition
                    {{ ($selectedStatus ?? 'all') === 'confirm' ? 'bg-yellow-500 text-black' : 'bg-white text-black hover:bg-yellow-50' }}">
@@ -111,7 +127,7 @@
         @else
             <div class="space-y-6">
                 @foreach($orders as $order)
-                    <div class="bg-white border-2 border-black rounded-lg p-6 hover:bg-yellow-50 transition-all">
+                    <div class="bg-white border-2 border-black rounded-lg p-6">
                         {{-- Order Header --}}
                         <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 pb-4 border-b-2 border-black">
                             <div>
@@ -119,17 +135,10 @@
                                 <p class="text-sm text-black">Placed on {{ $order->created_at->format('F d, Y \a\t g:i A') }}</p>
                             </div>
                             <div class="mt-4 md:mt-0 text-right">
-                                <span class="inline-block px-4 py-2 rounded-lg border-2 border-black font-semibold text-sm
-                                    @if($order->status === 'pending') bg-yellow-500 text-black
-                                    @elseif($order->status === 'confirm') bg-blue-500 text-black
-                                    @elseif($order->status === 'on deliver') bg-purple-500 text-black
-                                    @elseif($order->status === 'complete') bg-green-500 text-black
-                                    @elseif($order->status === 'cancelled') bg-red-500 text-black
-                                    @else bg-gray-200 text-black
-                                    @endif">
+                                <span class="inline-block px-4 py-2 rounded-lg border-2 border-black font-semibold text-sm bg-white text-black">
                                     {{ ucfirst($order->status) }}
                                 </span>
-                                <p class="text-2xl font-bold text-yellow-500 mt-2">₱{{ number_format($order->total_amount, 2) }}</p>
+                                <p class="text-2xl font-bold text-black mt-2">₱{{ number_format($order->total_amount, 2) }}</p>
                             </div>
                         </div>
 
@@ -174,7 +183,7 @@
                                                 </div>
                                                 <div>
                                                     <span class="text-sm text-black font-medium">Unit Price: </span>
-                                                    <span class="text-base font-bold text-yellow-500">₱{{ number_format($item->price, 2) }}</span>
+                                                    <span class="text-base font-bold text-black">₱{{ number_format($item->price, 2) }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -182,7 +191,7 @@
                                         {{-- Item Total --}}
                                         <div class="text-center md:text-right w-full md:w-auto">
                                             <p class="text-sm text-black font-medium mb-1">Item Total</p>
-                                            <p class="text-xl font-bold text-yellow-500">₱{{ number_format($item->quantity * $item->price, 2) }}</p>
+                                            <p class="text-xl font-bold text-black">₱{{ number_format($item->quantity * $item->price, 2) }}</p>
                                         </div>
                                     </div>
                                 @endforeach
@@ -193,11 +202,11 @@
                         @if($order->payment_method === 'gcash' && $order->payment_screenshot)
                             <div class="mt-4 pt-4 border-t-2 border-black">
                                 <p class="text-sm text-black font-medium mb-2">Payment Screenshot:</p>
-                                <a href="{{ asset('storage/' . $order->payment_screenshot) }}" target="_blank" class="inline-block">
-                                    <img src="{{ asset('storage/' . $order->payment_screenshot) }}" 
-                                         alt="Payment Screenshot" 
-                                         class="max-w-xs border-2 border-black rounded-lg">
-                                </a>
+                                <button data-image-url="{{ asset('storage/' . $order->payment_screenshot) }}" 
+                                        onclick="openImageModal(this.getAttribute('data-image-url'))" 
+                                        class="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg transition border-2 border-black">
+                                    View Payment Image
+                                </button>
                             </div>
                         @endif
 
@@ -219,5 +228,40 @@
         @endif
     </div>
 </div>
+
+{{-- Image Modal --}}
+<div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4" onclick="closeImageModal()">
+    <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto" onclick="event.stopPropagation()">
+        <div class="sticky top-0 bg-white border-b-2 border-black px-6 py-4 flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-black">Payment Screenshot</h3>
+            <button onclick="closeImageModal()" class="text-black hover:text-yellow-500 text-2xl font-bold">
+                &times;
+            </button>
+        </div>
+        <div class="p-6">
+            <img id="modalImage" src="" alt="Payment Screenshot" class="w-full h-auto rounded-lg border-2 border-black">
+        </div>
+    </div>
+</div>
+
+<script>
+function openImageModal(imageSrc) {
+    document.getElementById('modalImage').src = imageSrc;
+    document.getElementById('imageModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImageModal() {
+    document.getElementById('imageModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeImageModal();
+    }
+});
+</script>
 @endsection
 

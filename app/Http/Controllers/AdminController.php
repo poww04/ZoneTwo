@@ -184,16 +184,39 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Order approved successfully.');
     }
 
-    public function manageOrders()
+    public function declineOrder(Order $order)
     {
-        $orders = Order::with('user', 'items.product', 'items.productSize')->latest()->get();
-        return view('admin.manage-orders', compact('orders'));
+        if($order->status !== 'pending'){
+            return redirect()->back()->with('error', 'Order cannot be declined.');
+        }
+
+        // Update order status to declined
+        $order->status = 'declined';
+        $order->save();
+
+        return redirect()->back()->with('success', 'Order declined successfully.');
+    }
+
+    public function manageOrders(Request $request)
+    {
+        $selectedStatus = $request->get('status', 'all');
+        
+        $query = Order::with('user', 'items.product', 'items.productSize')->latest();
+        
+        // Filter by status if provided
+        if ($selectedStatus !== 'all') {
+            $query->where('status', $selectedStatus);
+        }
+        
+        $orders = $query->get();
+        
+        return view('admin.manage-orders', compact('orders', 'selectedStatus'));
     }
 
     public function updateOrderStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:pending,cancelled,confirm,on deliver,complete',
+            'status' => 'required|in:pending,cancelled,declined,confirm,on deliver,complete',
         ]);
 
         $order->status = $request->status;

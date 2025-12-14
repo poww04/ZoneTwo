@@ -53,7 +53,7 @@
                     </div>
 
                     <div class="flex justify-between items-baseline mt-auto pt-3 px-2">
-                        <p class="text-lg font-bold text-yellow-500">₱{{ number_format($product->price, 2) }}</p>
+                        <p class="text-lg font-bold text-black">₱{{ number_format($product->price, 2) }}</p>
                         <p class="text-xs text-black font-medium {{ $product->stock > 0 ? '' : 'text-red-600' }}">
                             {{ $product->stock > 0 ? "Stock: {$product->stock}" : 'Out of Stock' }}
                         </p>

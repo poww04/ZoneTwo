@@ -26,6 +26,7 @@ class User extends Authenticatable
         'phone_number',
         'viewed_complete_count',
         'viewed_cancelled_count',
+        'viewed_declined_count',
     ];
 
     /**

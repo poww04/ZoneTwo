@@ -10,7 +10,7 @@
         <div class="flex items-center justify-between h-20">
             {{-- Left: ZoneTwo Logo --}}
             <div class="flex-shrink-0 flex items-center">
-                <a href="{{ route('dashboard') }}" class="text-3xl font-aesthetic text-black hover:text-yellow-500 transition">
+                <a href="{{ route('dashboard') }}" class="text-5xl font-aesthetic font-bold text-black hover:text-yellow-500 transition">
                     ZoneTwo
                 </a>
             </div>
@@ -53,7 +53,11 @@
                             $viewedCancelledCount = $user->viewed_cancelled_count ?? 0;
                             $newCancelledCount = max(0, $currentCancelledCount - $viewedCancelledCount);
                             
-                            $totalOrderCount = $pendingCount + $confirmCount + $onDeliverCount + $newCompleteCount + $newCancelledCount;
+                            $currentDeclinedCount = (clone $baseQuery)->where('status', 'declined')->count();
+                            $viewedDeclinedCount = $user->viewed_declined_count ?? 0;
+                            $newDeclinedCount = max(0, $currentDeclinedCount - $viewedDeclinedCount);
+                            
+                            $totalOrderCount = $pendingCount + $confirmCount + $onDeliverCount + $newCompleteCount + $newCancelledCount + $newDeclinedCount;
                         @endphp
                         @if($totalOrderCount > 0)
                             <span class="absolute top-2 right-2 bg-yellow-500 text-black text-xs rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center font-medium">{{ $totalOrderCount }}</span>

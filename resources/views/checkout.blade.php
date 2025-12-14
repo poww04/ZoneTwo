@@ -149,7 +149,7 @@
                                         </div>
                                         <div>
                                             <span class="text-sm text-black font-medium">Unit Price: </span>
-                                            <span class="text-lg font-bold text-yellow-500">₱{{ number_format($item->price, 2) }}</span>
+                                            <span class="text-lg font-bold text-black">₱{{ number_format($item->price, 2) }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -157,7 +157,7 @@
                                 {{-- Item Total --}}
                                 <div class="text-center md:text-right w-full md:w-auto">
                                     <p class="text-sm text-black font-medium mb-1">Item Total</p>
-                                    <p class="text-2xl font-bold text-yellow-500">₱{{ number_format($item->quantity * $item->price, 2) }}</p>
+                                    <p class="text-2xl font-bold text-black">₱{{ number_format($item->quantity * $item->price, 2) }}</p>
                                 </div>
                             </div>
                         </div>
@@ -181,7 +181,7 @@
                                 <div class="border-t-2 border-black pt-4">
                                     <div class="flex justify-between items-center">
                                         <span class="text-xl font-bold text-black">Total</span>
-                                        <span class="text-3xl font-bold text-yellow-500">₱{{ number_format($cart->items->sum(fn($i) => $i->price * $i->quantity), 2) }}</span>
+                                        <span class="text-3xl font-bold text-black">₱{{ number_format($cart->items->sum(fn($i) => $i->price * $i->quantity), 2) }}</span>
                                     </div>
                                 </div>
                             </div>

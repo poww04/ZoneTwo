@@ -18,7 +18,7 @@
 
                     <h2 class="text-3xl font-bold text-black mb-3">{{ $product->name }}</h2>
                     <p class="text-black mb-4">{{ $product->description ?: 'No description available.' }}</p>
-                    <p class="text-xl font-semibold text-yellow-500 mb-6">₱{{ number_format($product->price, 2) }} per unit</p>
+                    <p class="text-xl font-semibold text-black mb-6">₱{{ number_format($product->price, 2) }} per unit</p>
 
                     @if(session('error'))
                         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -92,7 +92,7 @@
                     <div class="border-t-2 border-black pt-4">
                         <div class="flex justify-between items-center">
                             <span class="text-lg font-semibold text-black">Total Price:</span>
-                            <span class="text-2xl font-bold text-yellow-500">₱{{ number_format($this->totalPrice, 2) }}</span>
+                            <span class="text-2xl font-bold text-black">₱{{ number_format($this->totalPrice, 2) }}</span>
                         </div>
                     </div>
 
