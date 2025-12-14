@@ -6,7 +6,78 @@
         {{-- Header --}}
         <div class="mb-8">
             <h1 class="text-4xl font-bold text-black mb-2">My Orders</h1>
-            <p class="text-black">View your order history and track your purchases</p>
+            <p class="text-black mb-4">View your order history and track your purchases</p>
+            
+            {{-- Filter Tabs --}}
+            <div class="flex flex-wrap gap-2 mb-6">
+                <a href="{{ route('orders.index', ['status' => 'all']) }}" 
+                   class="px-4 py-2 rounded-lg border-2 border-black font-semibold text-sm transition
+                   {{ ($selectedStatus ?? 'all') === 'all' ? 'bg-yellow-500 text-black' : 'bg-white text-black hover:bg-yellow-50' }}">
+                    All
+                </a>
+                <a href="{{ route('orders.index', ['status' => 'pending']) }}" 
+                   class="relative px-4 py-2 rounded-lg border-2 border-black font-semibold text-sm transition
+                   {{ ($selectedStatus ?? 'all') === 'pending' ? 'bg-yellow-500 text-black' : 'bg-white text-black hover:bg-yellow-50' }}">
+                    Pending
+                    @if(($statusCounts['pending'] ?? 0) > 0)
+                        <span class="absolute -top-2 -right-2 bg-yellow-500 text-black text-xs rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center font-medium border-2 border-black">
+                            {{ $statusCounts['pending'] }}
+                        </span>
+                    @endif
+                </a>
+                <a href="{{ route('orders.index', ['status' => 'cancelled']) }}" 
+                   class="relative px-4 py-2 rounded-lg border-2 border-black font-semibold text-sm transition
+                   {{ ($selectedStatus ?? 'all') === 'cancelled' ? 'bg-yellow-500 text-black' : 'bg-white text-black hover:bg-yellow-50' }}">
+                    Cancelled
+                    @php
+                        $currentCancelledCount = $statusCounts['cancelled'] ?? 0;
+                        $viewedCancelledCount = $viewedStatusCounts['cancelled'] ?? 0;
+                        $newCancelledCount = $currentCancelledCount - $viewedCancelledCount;
+                        $showCancelledBadge = $newCancelledCount > 0;
+                    @endphp
+                    @if($showCancelledBadge)
+                        <span class="absolute -top-2 -right-2 bg-yellow-500 text-black text-xs rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center font-medium border-2 border-black">
+                            {{ $newCancelledCount }}
+                        </span>
+                    @endif
+                </a>
+                <a href="{{ route('orders.index', ['status' => 'confirm']) }}" 
+                   class="relative px-4 py-2 rounded-lg border-2 border-black font-semibold text-sm transition
+                   {{ ($selectedStatus ?? 'all') === 'confirm' ? 'bg-yellow-500 text-black' : 'bg-white text-black hover:bg-yellow-50' }}">
+                    Confirm
+                    @if(($statusCounts['confirm'] ?? 0) > 0)
+                        <span class="absolute -top-2 -right-2 bg-yellow-500 text-black text-xs rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center font-medium border-2 border-black">
+                            {{ $statusCounts['confirm'] }}
+                        </span>
+                    @endif
+                </a>
+                <a href="{{ route('orders.index', ['status' => 'on deliver']) }}" 
+                   class="relative px-4 py-2 rounded-lg border-2 border-black font-semibold text-sm transition
+                   {{ ($selectedStatus ?? 'all') === 'on deliver' ? 'bg-yellow-500 text-black' : 'bg-white text-black hover:bg-yellow-50' }}">
+                    On Deliver
+                    @if(($statusCounts['on deliver'] ?? 0) > 0)
+                        <span class="absolute -top-2 -right-2 bg-yellow-500 text-black text-xs rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center font-medium border-2 border-black">
+                            {{ $statusCounts['on deliver'] }}
+                        </span>
+                    @endif
+                </a>
+                <a href="{{ route('orders.index', ['status' => 'complete']) }}" 
+                   class="relative px-4 py-2 rounded-lg border-2 border-black font-semibold text-sm transition
+                   {{ ($selectedStatus ?? 'all') === 'complete' ? 'bg-yellow-500 text-black' : 'bg-white text-black hover:bg-yellow-50' }}">
+                    Complete
+                    @php
+                        $currentCompleteCount = $statusCounts['complete'] ?? 0;
+                        $viewedCompleteCount = $viewedStatusCounts['complete'] ?? 0;
+                        $newCompleteCount = $currentCompleteCount - $viewedCompleteCount;
+                        $showCompleteBadge = $newCompleteCount > 0;
+                    @endphp
+                    @if($showCompleteBadge)
+                        <span class="absolute -top-2 -right-2 bg-yellow-500 text-black text-xs rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center font-medium border-2 border-black">
+                            {{ $newCompleteCount }}
+                        </span>
+                    @endif
+                </a>
+            </div>
         </div>
 
         @if($orders->count() === 0)
@@ -15,11 +86,25 @@
                 <svg class="mx-auto h-24 w-24 text-black mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
-                <h2 class="text-2xl font-bold text-black mb-3">No orders yet</h2>
-                <p class="text-black mb-6">You haven't placed any orders. Start shopping to see your orders here!</p>
-                <a href="{{ route('dashboard') }}" class="inline-block bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 px-8 rounded-lg transition border-2 border-black">
-                    Start Shopping
-                </a>
+                <h2 class="text-2xl font-bold text-black mb-3">
+                    @if(isset($selectedStatus) && $selectedStatus !== 'all')
+                        No {{ ucfirst($selectedStatus) }} orders
+                    @else
+                        No orders yet
+                    @endif
+                </h2>
+                <p class="text-black mb-6">
+                    @if(isset($selectedStatus) && $selectedStatus !== 'all')
+                        You don't have any orders with this status.
+                    @else
+                        You haven't placed any orders. Start shopping to see your orders here!
+                    @endif
+                </p>
+                @if(!isset($selectedStatus) || $selectedStatus === 'all')
+                    <a href="{{ route('dashboard') }}" class="inline-block bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 px-8 rounded-lg transition border-2 border-black">
+                        Start Shopping
+                    </a>
+                @endif
             </div>
         @else
             <div class="space-y-6">
@@ -33,8 +118,10 @@
                             </div>
                             <div class="mt-4 md:mt-0 text-right">
                                 <span class="inline-block px-4 py-2 rounded-lg border-2 border-black font-semibold text-sm
-                                    @if($order->status === 'completed') bg-green-500 text-black
-                                    @elseif($order->status === 'processing') bg-yellow-500 text-black
+                                    @if($order->status === 'pending') bg-yellow-500 text-black
+                                    @elseif($order->status === 'confirm') bg-blue-500 text-black
+                                    @elseif($order->status === 'on deliver') bg-purple-500 text-black
+                                    @elseif($order->status === 'complete') bg-green-500 text-black
                                     @elseif($order->status === 'cancelled') bg-red-500 text-black
                                     @else bg-gray-200 text-black
                                     @endif">
