@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
@@ -23,12 +24,15 @@ class OrderController extends Controller
         ];
 
         // Mark "complete" or "cancelled" as viewed when user opens those filters
-        // Store the count at the time of viewing
-        if ($selectedStatus === 'complete' || $selectedStatus === 'cancelled') {
-            $viewedStatusCounts = $request->session()->get('viewed_order_status_counts', []);
-            $viewedStatusCounts[$selectedStatus] = $statusCounts[$selectedStatus];
-            $request->session()->put('viewed_order_status_counts', $viewedStatusCounts);
+        // Store the count at the time of viewing in database
+        if ($selectedStatus === 'complete') {
+            User::where('id', Auth::id())->update(['viewed_complete_count' => $statusCounts['complete']]);
+        } elseif ($selectedStatus === 'cancelled') {
+            User::where('id', Auth::id())->update(['viewed_cancelled_count' => $statusCounts['cancelled']]);
         }
+        
+        // Get user for later use
+        $user = Auth::user();
 
         // Build query for orders list
         $query = Order::where('user_id', Auth::id())
@@ -42,9 +46,31 @@ class OrderController extends Controller
 
         $orders = $query->get();
 
-        // Get viewed status counts from session
-        $viewedStatusCounts = $request->session()->get('viewed_order_status_counts', []);
+        // Get viewed status counts from database
+        $viewedStatusCounts = [
+            'complete' => $user->viewed_complete_count ?? 0,
+            'cancelled' => $user->viewed_cancelled_count ?? 0,
+        ];
 
         return view('orders', compact('orders', 'selectedStatus', 'statusCounts', 'viewedStatusCounts'));
+    }
+
+    public function cancel(Order $order)
+    {
+        // Ensure the order belongs to the authenticated user
+        if ($order->user_id !== Auth::id()) {
+            return redirect()->route('orders.index')->with('error', 'Unauthorized action.');
+        }
+
+        // Only allow cancellation of pending orders
+        if ($order->status !== 'pending') {
+            return redirect()->route('orders.index')->with('error', 'Only pending orders can be cancelled.');
+        }
+
+        // Update order status to cancelled
+        $order->status = 'cancelled';
+        $order->save();
+
+        return redirect()->route('orders.index', ['status' => 'pending'])->with('success', 'Order cancelled successfully.');
     }
 }

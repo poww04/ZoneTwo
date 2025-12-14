@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
 
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::patch('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

@@ -1,15 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+@include('partials.topbar', ['pageTitle' => 'Cart'])
+
 <div class="min-h-screen bg-white">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {{-- Success message --}}
-        @if(session('success'))
-            <div class="mb-6 bg-yellow-500 text-black px-6 py-4 rounded-lg shadow-md border-2 border-black">
-                {{ session('success') }}
-            </div>
-        @endif
-
         {{-- Header --}}
         <div class="mb-8">
             <h1 class="text-4xl font-bold text-black mb-2">Your Cart</h1>
@@ -80,6 +75,18 @@
                                     <p class="text-2xl font-bold text-yellow-500">₱{{ number_format($item->quantity * $item->price, 2) }}</p>
                                 </div>
                                 
+                                @php
+                                    // Check if item is out of stock
+                                    $isOutOfStock = false;
+                                    if ($item->productSize) {
+                                        // If item has a size, check size stock
+                                        $isOutOfStock = $item->productSize->stock <= 0;
+                                    } else {
+                                        // If no size, check product stock
+                                        $isOutOfStock = $item->product->stock <= 0;
+                                    }
+                                @endphp
+                                
                                 <div class="flex gap-3">
                                     <form method="POST" action="{{ route('cart.remove', $item->id) }}" class="inline">
                                         @csrf
@@ -88,9 +95,15 @@
                                             Remove
                                         </button>
                                     </form>
-                                    <a href="{{ route('checkout.index', ['item_id' => $item->id]) }}" class="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg transition border-2 border-black inline-block">
-                                        Checkout
-                                    </a>
+                                    @if($isOutOfStock)
+                                        <div class="bg-red-100 border-2 border-red-500 text-red-700 font-semibold py-2 px-4 rounded-lg text-center">
+                                            Not Available (out of stocks!)
+                                        </div>
+                                    @else
+                                        <a href="{{ route('checkout.index', ['item_id' => $item->id]) }}" class="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg transition border-2 border-black inline-block">
+                                            Checkout
+                                        </a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -115,15 +128,39 @@
                     </div>
                 </div>
 
+                @php
+                    // Check if any item in cart is out of stock
+                    $hasOutOfStockItems = false;
+                    foreach($cart->items as $cartItem) {
+                        if ($cartItem->productSize) {
+                            if ($cartItem->productSize->stock <= 0) {
+                                $hasOutOfStockItems = true;
+                                break;
+                            }
+                        } else {
+                            if ($cartItem->product->stock <= 0) {
+                                $hasOutOfStockItems = true;
+                                break;
+                            }
+                        }
+                    }
+                @endphp
+                
                 <div class="flex gap-4">
                     <a href="{{ route('dashboard') }}" class="flex-1 bg-white border-2 border-black hover:bg-black hover:text-white text-black font-semibold py-3 px-6 rounded-lg transition text-center">
                         Continue Shopping
                     </a>
-                    <form method="GET" action="{{ route('checkout.index') }}" class="flex-1">
-                        <button class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 px-6 rounded-lg transition border-2 border-black">
-                            Proceed to Checkout
-                        </button>
-                    </form>
+                    @if($hasOutOfStockItems)
+                        <div class="flex-1 bg-red-100 border-2 border-red-500 text-red-700 font-semibold py-3 px-6 rounded-lg text-center">
+                            Not Available (out of stocks!)
+                        </div>
+                    @else
+                        <form method="GET" action="{{ route('checkout.index') }}" class="flex-1">
+                            <button class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 px-6 rounded-lg transition border-2 border-black">
+                                Proceed to Checkout
+                            </button>
+                        </form>
+                    @endif
                 </div>
             </div>
         @endif

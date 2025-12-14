@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+@include('partials.topbar', ['pageTitle' => 'My Orders'])
+
 <div class="min-h-screen bg-white">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {{-- Header --}}
@@ -196,6 +198,19 @@
                                          alt="Payment Screenshot" 
                                          class="max-w-xs border-2 border-black rounded-lg">
                                 </a>
+                            </div>
+                        @endif
+
+                        {{-- Cancel Button (only for pending orders) --}}
+                        @if($order->status === 'pending')
+                            <div class="mt-6 pt-4 border-t-2 border-black">
+                                <form method="POST" action="{{ route('orders.cancel', $order->id) }}" onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-lg transition border-2 border-black">
+                                        Cancel Order
+                                    </button>
+                                </form>
                             </div>
                         @endif
                     </div>

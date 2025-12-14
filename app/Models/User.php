@@ -24,6 +24,8 @@ class User extends Authenticatable
         'is_admin',
         'address',
         'phone_number',
+        'viewed_complete_count',
+        'viewed_cancelled_count',
     ];
 
     /**
