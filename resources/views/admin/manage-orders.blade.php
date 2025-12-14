@@ -34,12 +34,12 @@
                 </a>
                 <a href="{{ route('admin.orders.manage', ['status' => 'cancelled']) }}" 
                    class="px-4 py-2 rounded-lg font-semibold text-sm transition
-                   {{ ($selectedStatus ?? 'all') === 'cancelled' ? 'bg-red-600 text-white' : 'bg-red-50 text-red-700 hover:bg-red-100' }}">
+                   {{ ($selectedStatus ?? 'all') === 'cancelled' ? 'bg-gray-600 text-white' : 'bg-gray-50 text-gray-700 hover:bg-gray-100' }}">
                     Cancelled
                 </a>
                 <a href="{{ route('admin.orders.manage', ['status' => 'declined']) }}" 
                    class="px-4 py-2 rounded-lg font-semibold text-sm transition
-                   {{ ($selectedStatus ?? 'all') === 'declined' ? 'bg-orange-600 text-white' : 'bg-orange-50 text-orange-700 hover:bg-orange-100' }}">
+                   {{ ($selectedStatus ?? 'all') === 'declined' ? 'bg-red-600 text-white' : 'bg-red-50 text-red-700 hover:bg-red-100' }}">
                     Declined
                 </a>
                 <a href="{{ route('admin.orders.manage', ['status' => 'on deliver']) }}" 
@@ -125,8 +125,8 @@
                                             @elseif($order->status === 'confirm') bg-blue-100 text-blue-800
                                             @elseif($order->status === 'on deliver') bg-purple-100 text-purple-800
                                             @elseif($order->status === 'complete') bg-green-100 text-green-800
-                                            @elseif($order->status === 'cancelled') bg-red-100 text-red-800
-                                            @elseif($order->status === 'declined') bg-orange-100 text-orange-800
+                                            @elseif($order->status === 'cancelled') bg-gray-100 text-gray-800
+                                            @elseif($order->status === 'declined') bg-red-100 text-red-800
                                             @endif">
                                             {{ ucfirst($order->status) }}
                                         </span>

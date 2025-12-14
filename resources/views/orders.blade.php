@@ -238,8 +238,8 @@
                 &times;
             </button>
         </div>
-        <div class="p-6">
-            <img id="modalImage" src="" alt="Payment Screenshot" class="w-full h-auto rounded-lg border-2 border-black">
+        <div class="p-6 flex justify-center items-center">
+            <img id="modalImage" src="" alt="Payment Screenshot" class="max-w-full h-auto rounded-lg border-2 border-black object-contain" style="max-height: 70vh;">
         </div>
     </div>
 </div>

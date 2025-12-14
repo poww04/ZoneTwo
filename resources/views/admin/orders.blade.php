@@ -97,14 +97,14 @@
                                         </ul>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <div class="flex flex-col gap-2">
-                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 w-fit">
+                                        <div class="flex items-center gap-3">
+                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
                                                 {{ $order->payment_method === 'cod' ? 'Cash on Delivery' : 'GCash' }}
                                             </span>
                                             @if($order->payment_method === 'gcash' && $order->payment_screenshot)
                                                 <button data-image-url="{{ asset('storage/' . $order->payment_screenshot) }}" 
                                                         onclick="openImageModal(this.getAttribute('data-image-url'))" 
-                                                        class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3 py-1 rounded-lg transition shadow-sm hover:shadow w-fit">
+                                                        class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3 py-1 rounded-lg transition shadow-sm hover:shadow whitespace-nowrap">
                                                     View Image
                                                 </button>
                                             @endif
@@ -166,8 +166,8 @@
                 </svg>
             </button>
         </div>
-        <div class="p-6">
-            <img id="modalImage" src="" alt="Payment Screenshot" class="w-full h-auto rounded-lg border-2 border-gray-200">
+        <div class="p-6 flex justify-center items-center">
+            <img id="modalImage" src="" alt="Payment Screenshot" class="max-w-full h-auto rounded-lg border-2 border-gray-200 object-contain" style="max-height: 70vh;">
         </div>
     </div>
 </div>

@@ -33,7 +33,7 @@
                     {{-- Left Side: Order Details and Items --}}
                     <div class="lg:col-span-2 space-y-6">
                     {{-- Order Details --}}
-                    <div class="bg-white border-2 border-black rounded-lg p-4 hover:bg-yellow-50 transition-all">
+                    <div class="bg-white border-2 border-black rounded-lg p-4 transition-all">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                             <div>
                                 <p class="text-xs text-black font-medium mb-1">Name</p>
@@ -57,14 +57,14 @@
                         <div class="border-t-2 border-black pt-4">
                             <h3 class="text-base font-bold text-black mb-3">Payment Method</h3>
                             <div class="space-y-2">
-                                <label class="flex items-center p-3 border-2 border-black rounded-lg cursor-pointer hover:bg-yellow-50 transition">
+                                <label class="flex items-center p-3 border-2 border-black rounded-lg cursor-pointer transition">
                                     <input type="radio" name="payment_method" value="cod" checked class="mr-3 w-4 h-4 text-yellow-500 focus:ring-yellow-500 border-black" onchange="togglePaymentMethod()">
                                     <div>
                                         <span class="text-base font-semibold text-black">Cash on Delivery (COD)</span>
                                         <p class="text-xs text-black">Pay when you receive your order</p>
                                     </div>
                                 </label>
-                                <label class="flex items-center p-3 border-2 border-black rounded-lg cursor-pointer hover:bg-yellow-50 transition">
+                                <label class="flex items-center p-3 border-2 border-black rounded-lg cursor-pointer transition">
                                     <input type="radio" name="payment_method" value="gcash" class="mr-3 w-4 h-4 text-yellow-500 focus:ring-yellow-500 border-black" onchange="togglePaymentMethod()">
                                     <div>
                                         <span class="text-base font-semibold text-black">GCash</span>
@@ -114,7 +114,7 @@
 
                     <h2 class="text-2xl font-bold text-black mb-6">Order Items</h2>
                     @foreach($cart->items as $item)
-                        <div class="bg-white border-2 border-black rounded-lg p-6 hover:bg-yellow-50 transition-all">
+                        <div class="bg-white border-2 border-black rounded-lg p-6 transition-all">
                             <div class="flex flex-col md:flex-row items-center gap-6">
                                 {{-- Product Image --}}
                                 <div class="w-full md:w-32 flex-shrink-0">
@@ -166,7 +166,7 @@
 
                     {{-- Right Side: Order Summary --}}
                     <div class="lg:col-span-1">
-                        <div class="bg-white border-2 border-black rounded-lg p-6 sticky top-24 hover:bg-yellow-50 transition-all">
+                        <div class="bg-white border-2 border-black rounded-lg p-6 sticky top-24 transition-all">
                             <h2 class="text-2xl font-bold text-black mb-6">Order Summary</h2>
                             
                             <div class="space-y-4 mb-6">

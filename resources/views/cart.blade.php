@@ -27,7 +27,7 @@
             {{-- Cart Items --}}
             <div class="space-y-4 mb-8">
                 @foreach($cart->items as $item)
-                    <div class="bg-white border-2 border-black rounded-lg p-6 hover:bg-yellow-50 transition-all">
+                    <div class="bg-white border-2 border-black rounded-lg p-6 transition-all">
                         <div class="flex flex-col md:flex-row items-center gap-6">
                             {{-- Product Image --}}
                             <div class="w-full md:w-32 flex-shrink-0">
