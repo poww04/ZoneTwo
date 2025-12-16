@@ -85,7 +85,6 @@
                         </button>
                     </div>
                     <div id="sizes-container" class="space-y-2">
-                        <!-- Size fields will be added here dynamically -->
                     </div>
                     <div class="mt-2">
                         <label for="total-stock" class="block text-sm font-medium text-gray-700 mb-2">Total Stock</label>
@@ -102,13 +101,34 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
-                    <input type="file"
-                        id="image"
-                        name="image"
-                        accept=".jpg,.jpeg,.png"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Product Images (1-2 images)</label>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="image1" class="block text-xs text-gray-600 mb-1">Image 1 (Required)</label>
+                            <input type="file"
+                                id="image1"
+                                name="images[]"
+                                accept=".jpg,.jpeg,.png"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                onchange="previewImage(this, 'preview1')"
+                                required>
+                            <div id="preview1" class="mt-2 hidden">
+                                <img src="" alt="Preview" class="w-32 h-32 object-cover rounded-lg border border-gray-300">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="image2" class="block text-xs text-gray-600 mb-1">Image 2 (Optional)</label>
+                            <input type="file"
+                                id="image2"
+                                name="images[]"
+                                accept=".jpg,.jpeg,.png"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                onchange="previewImage(this, 'preview2')">
+                            <div id="preview2" class="mt-2 hidden">
+                                <img src="" alt="Preview" class="w-32 h-32 object-cover rounded-lg border border-gray-300">
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="flex gap-4">
@@ -188,10 +208,27 @@
         document.getElementById('total-stock').value = total;
     }
 
-    // Add one size field by default when page loads
     document.addEventListener('DOMContentLoaded', function() {
         addSizeField();
     });
+
+    function previewImage(input, previewId) {
+        const preview = document.getElementById(previewId);
+        const previewImg = preview.querySelector('img');
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                preview.classList.remove('hidden');
+            };
+            
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.classList.add('hidden');
+        }
+    }
 </script>
 @endsection
 

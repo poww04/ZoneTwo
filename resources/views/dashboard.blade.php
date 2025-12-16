@@ -7,19 +7,16 @@
 
 <div class="min-h-screen bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {{-- Product Search / Listing via Livewire --}}
         <div id="product-search">
             @if($selectedCategoryId)
                 @livewire('product-search', ['categoryId' => $selectedCategoryId])
             @else
-                {{-- Welcome Section with Images --}}
                 <div class="space-y-8">
                     <div class="text-center mb-8">
                         <h2 class="text-4xl font-bold text-black mb-2">Welcome to ZoneTwo!</h2>
                         <p class="text-lg text-black">Discover amazing products curated just for you</p>
                     </div>
 
-                    {{-- Welcome Image 1 --}}
                     <div class="flex flex-col md:flex-row items-center gap-6">
                         <div class="w-full md:w-1/2">
                             <img src="{{ asset('images/2b1s.jpg') }}" 
@@ -36,7 +33,6 @@
                         </div>
                     </div>
 
-                    {{-- Welcome Image 2 --}}
                     <div class="flex flex-col md:flex-row-reverse items-center gap-6">
                         <div class="w-full md:w-1/2">
                             <img src="{{ asset('images/z3.jpg') }}" 
@@ -53,7 +49,6 @@
                         </div>
                     </div>
 
-                    {{-- Welcome Image 3 --}}
                     <div class="flex flex-col md:flex-row items-center gap-6">
                         <div class="w-full md:w-1/2">
                             <img src="{{ asset('images/z2.jpg') }}" 
@@ -76,7 +71,6 @@
     </div>
 </div>
 
-{{-- Product Modal --}}
 @php
     $selectedProductId = request('product_id');
 @endphp

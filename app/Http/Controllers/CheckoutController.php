@@ -21,21 +21,17 @@ class CheckoutController extends Controller
         
         $items = $cart->items;
         
-        // If item_id is provided, filter to show only that item
         if ($request->has('item_id')) {
             $itemId = (int) $request->input('item_id');
             
-            // Verify the item exists and belongs to the user's cart
             $selectedItem = $items->firstWhere('id', $itemId);
             
             if (!$selectedItem) {
                 return redirect()->route('cart.index')->with('error', 'Item not found in cart.');
             }
             
-            // Filter to only the selected item
             $items = collect([$selectedItem]);
             
-            // Update cart's items relation
             $cart->setRelation('items', $items);
         }
         
@@ -57,7 +53,6 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Cart is empty.');
         }
 
-        // Filter items if specific item_ids are provided
         $itemsToCheckout = $cart->items;
         if ($request->has('item_ids') && !empty($request->item_ids)) {
             $itemsToCheckout = $cart->items->whereIn('id', $request->item_ids);
@@ -92,11 +87,9 @@ class CheckoutController extends Controller
                 ]);
             }
 
-            // Delete only the checked out items from cart
             $itemIds = $itemsToCheckout->pluck('id')->toArray();
             $cart->items()->whereIn('id', $itemIds)->delete();
             
-            // Delete cart if no items left
             if ($cart->items()->count() === 0) {
                 $cart->delete();
             }

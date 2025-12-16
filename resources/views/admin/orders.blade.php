@@ -3,7 +3,6 @@
 @section('content')
 <div class="min-h-screen bg-gray-100 p-6">
     <div class="max-w-7xl mx-auto">
-        {{-- Header Card --}}
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <div class="flex justify-between items-center">
                 <div>
@@ -19,7 +18,6 @@
             </div>
         </div>
 
-        {{-- Error Message --}}
         @if(session('error'))
             <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 shadow-sm">
                 <div class="flex">
@@ -31,7 +29,6 @@
             </div>
         @endif
 
-        {{-- Success Message --}}
         @if(session('success'))
             <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-6 shadow-sm">
                 <div class="flex">
@@ -43,7 +40,6 @@
             </div>
         @endif
 
-        {{-- Orders Table --}}
         @if($orders->count() === 0)
             <div class="bg-white rounded-lg shadow-md p-12 text-center">
                 <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,7 +151,6 @@
     </div>
 </div>
 
-{{-- Image Modal --}}
 <div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4" onclick="closeImageModal()">
     <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto" onclick="event.stopPropagation()">
         <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
@@ -184,7 +179,6 @@ function closeImageModal() {
     document.body.style.overflow = 'auto';
 }
 
-// Close modal on Escape key
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         closeImageModal();

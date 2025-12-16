@@ -5,14 +5,12 @@
 
 <div class="min-h-screen bg-white">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {{-- Header --}}
         <div class="mb-8">
             <h1 class="text-4xl font-bold text-black mb-2">Checkout</h1>
             <p class="text-black">Review your order and confirm your purchase</p>
         </div>
 
         @if(!$cart || $cart->items->count() === 0)
-            {{-- Empty Cart --}}
             <div class="bg-white border-2 border-black rounded-lg p-12 text-center">
                 <svg class="mx-auto h-24 w-24 text-black mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -53,7 +51,6 @@
                             </div>
                         </div>
 
-                        {{-- Payment Method Selection --}}
                         <div class="border-t-2 border-black pt-4">
                             <h3 class="text-base font-bold text-black mb-3">Payment Method</h3>
                             <div class="space-y-2">
@@ -73,7 +70,6 @@
                                 </label>
                             </div>
 
-                            {{-- GCash QR Code and Upload Section --}}
                             <div id="gcash-section" class="mt-4 hidden">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {{-- Left: QR Code --}}
@@ -91,7 +87,6 @@
                                         <p class="text-sm text-black text-center">Scan the QR code using your GCash app to complete payment</p>
                                     </div>
 
-                                    {{-- Right: Upload Payment Screenshot --}}
                                     <div class="border-2 border-black rounded-lg p-4">
                                         <h3 class="text-lg font-bold text-black mb-4">Upload Payment Screenshot</h3>
                                         <div>
@@ -133,7 +128,6 @@
                                     @endif
                                 </div>
 
-                                {{-- Product Info --}}
                                 <div class="flex-grow w-full md:w-auto text-center md:text-left">
                                     <h3 class="text-xl font-bold text-black mb-2">{{ $item->product->name }}</h3>
                                     <div class="flex flex-wrap justify-center md:justify-start items-center gap-4">
@@ -154,7 +148,6 @@
                                     </div>
                                 </div>
 
-                                {{-- Item Total --}}
                                 <div class="text-center md:text-right w-full md:w-auto">
                                     <p class="text-sm text-black font-medium mb-1">Item Total</p>
                                     <p class="text-2xl font-bold text-black">₱{{ number_format($item->quantity * $item->price, 2) }}</p>
@@ -164,7 +157,6 @@
                     @endforeach
                 </div>
 
-                    {{-- Right Side: Order Summary --}}
                     <div class="lg:col-span-1">
                         <div class="bg-white border-2 border-black rounded-lg p-6 sticky top-24 transition-all">
                             <h2 class="text-2xl font-bold text-black mb-6">Order Summary</h2>
@@ -216,7 +208,6 @@
             gcashSection.classList.add('hidden');
             confirmBtn.disabled = false;
             confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            // Clear screenshot when switching to COD
             if (screenshotInput) {
                 screenshotInput.value = '';
             }
@@ -227,17 +218,14 @@
         const confirmBtn = document.getElementById('confirm-btn');
         
         if (input.files && input.files[0]) {
-            // Enable confirm button if screenshot is uploaded
             confirmBtn.disabled = false;
             confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
         } else {
-            // Disable confirm button if no file
             confirmBtn.disabled = true;
             confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
         }
     }
     
-    // Handle form submission
     document.getElementById('checkout-form').addEventListener('submit', function(e) {
         const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
         const screenshotInput = document.getElementById('payment_screenshot');

@@ -4,7 +4,6 @@
     $selectedCategoryId = $selectedCategoryId ?? null;
 @endphp
 
-{{-- Topbar --}}
 <nav class="bg-white border-b border-black sticky top-0 z-50 shadow-sm">
     <div class="w-full px-6 lg:px-12">
         <div class="flex items-center justify-between h-20">
@@ -15,7 +14,6 @@
                 </a>
             </div>
 
-            {{-- Center: Categories Navigation or Page Title (only on dashboard) --}}
             @if($showCategories)
                 <div class="hidden md:flex items-center space-x-8 flex-1 justify-center">
                     @if(\App\Models\Category::count() > 0)
@@ -31,7 +29,6 @@
                 </div>
             @endif
 
-            {{-- Right: Icons (Orders, Cart, Logout) - show on all pages --}}
             <div class="flex items-center space-x-0 flex-shrink-0">
                     {{-- Orders Icon --}}
                     <a href="{{ route('orders.index') }}" class="relative text-black hover:text-yellow-500 transition p-3 flex items-center" title="My Orders">
@@ -64,10 +61,8 @@
                         @endif
                     </a>
 
-                    {{-- Vertical Separator --}}
                     <div class="h-8 w-px bg-black mx-2"></div>
 
-                    {{-- Shopping Cart Icon --}}
                     <a href="{{ route('cart.index') }}" class="relative text-black hover:text-yellow-500 transition p-3 flex items-center">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
@@ -80,10 +75,8 @@
                         @endif
                     </a>
 
-                    {{-- Vertical Separator --}}
                     <div class="h-8 w-px bg-black mx-2"></div>
 
-                    {{-- Logout Button --}}
                     <form method="POST" action="{{ route('logout') }}" class="inline flex items-center">
                         @csrf
                         <button type="submit" class="text-black hover:text-yellow-500 transition p-3" title="Logout">
@@ -95,7 +88,6 @@
                 </div>
         </div>
 
-        {{-- Mobile Categories Menu (only for dashboard) --}}
         @if($showCategories)
             <div class="md:hidden border-t border-black py-3">
                 <div class="flex flex-wrap gap-2">

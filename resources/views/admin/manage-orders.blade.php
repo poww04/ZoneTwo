@@ -3,7 +3,6 @@
 @section('content')
 <div class="min-h-screen bg-gray-100 p-6">
     <div class="max-w-7xl mx-auto">
-        {{-- Header Card --}}
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <div class="flex justify-between items-center">
                 <div>
@@ -19,7 +18,6 @@
             </div>
         </div>
 
-        {{-- Filter Buttons --}}
         <div class="bg-white rounded-lg shadow-md p-4 mb-6">
             <div class="flex flex-wrap gap-3">
                 <a href="{{ route('admin.orders.manage', ['status' => 'all']) }}" 
@@ -55,7 +53,6 @@
             </div>
         </div>
 
-        {{-- Error Message --}}
         @if(session('error'))
             <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 shadow-sm">
                 <div class="flex">
@@ -67,7 +64,6 @@
             </div>
         @endif
 
-        {{-- Orders Table --}}
         @if($orders->count() === 0)
             <div class="bg-white rounded-lg shadow-md p-12 text-center">
                 <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

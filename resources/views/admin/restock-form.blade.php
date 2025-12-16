@@ -114,7 +114,6 @@
         document.getElementById('total-stock').value = total;
     }
 
-    // Update total stock when any stock input changes
     document.addEventListener('DOMContentLoaded', function() {
         const stockInputs = document.querySelectorAll('input[name*="[stock]"]:not([readonly])');
         stockInputs.forEach(input => {

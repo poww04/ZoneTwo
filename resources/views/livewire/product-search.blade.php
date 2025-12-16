@@ -1,5 +1,4 @@
 <div>
-    {{-- Search Bar --}}
     <div class="mb-6">
         <div class="relative">
             <input type="text" 

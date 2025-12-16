@@ -3,7 +3,6 @@
 @section('content')
 @php $selectedCategoryId = request('category_id'); @endphp
 
-{{-- Topbar --}}
 <nav class="bg-white border-b border-black sticky top-0 z-50 shadow-sm">
     <div class="w-full px-6 lg:px-12">
         <div class="flex items-center justify-between h-20">
@@ -14,7 +13,6 @@
                 </a>
             </div>
 
-            {{-- Center: Categories Navigation (only show if logged in) --}}
             @auth
                 @if(\App\Models\Category::count() > 0)
                     <div class="hidden md:flex items-center space-x-8 flex-1 justify-center">
@@ -28,10 +26,8 @@
                 @endif
             @endauth
 
-            {{-- Right: Auth Buttons or Icons --}}
             <div class="flex items-center space-x-0 flex-shrink-0">
                 @auth
-                    {{-- Orders Icon --}}
                     <a href="{{ route('orders.index') }}" class="relative text-black hover:text-yellow-500 transition p-3 flex items-center" title="My Orders">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -62,10 +58,8 @@
                         @endif
                     </a>
 
-                    {{-- Vertical Separator --}}
                     <div class="h-8 w-px bg-black mx-2"></div>
 
-                    {{-- Shopping Cart Icon --}}
                     <a href="{{ route('cart.index') }}" class="relative text-black hover:text-yellow-500 transition p-3 flex items-center">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
@@ -78,10 +72,8 @@
                         @endif
                     </a>
 
-                    {{-- Vertical Separator --}}
                     <div class="h-8 w-px bg-black mx-2"></div>
 
-                    {{-- Logout Button --}}
                     <form method="POST" action="{{ route('logout') }}" class="inline flex items-center">
                         @csrf
                         <button type="submit" class="text-black hover:text-yellow-500 transition p-3" title="Logout">
@@ -91,17 +83,14 @@
                         </button>
                     </form>
                 @else
-                    {{-- Login Button --}}
                     <a href="{{ route('login') }}" class="text-black hover:text-yellow-500 transition p-3 flex items-center" title="Login">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
                         </svg>
                     </a>
 
-                    {{-- Vertical Separator --}}
                     <div class="h-8 w-px bg-black mx-2"></div>
 
-                    {{-- Register Button --}}
                     @if (Route::has('register'))
                         <a href="{{ route('register') }}" class="text-black hover:text-yellow-500 transition p-3 flex items-center" title="Register">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,7 +102,6 @@
             </div>
         </div>
 
-        {{-- Mobile Categories Menu (only if logged in) --}}
         @auth
             @if(\App\Models\Category::count() > 0)
                 <div class="md:hidden border-t border-black py-3">
@@ -133,14 +121,12 @@
 
 <div class="min-h-screen bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {{-- Welcome Section with Images --}}
         <div class="space-y-8">
             <div class="text-center mb-8">
                 <h2 class="text-4xl font-bold text-black mb-2">Welcome to ZoneTwo!</h2>
                 <p class="text-lg text-black">Discover amazing products curated just for you</p>
             </div>
 
-            {{-- Welcome Image 1 --}}
             <div class="flex flex-col md:flex-row items-center gap-6">
                 <div class="w-full md:w-1/2">
                     <img src="{{ asset('images/2b1s.jpg') }}" 
@@ -161,7 +147,6 @@
                 </div>
             </div>
 
-            {{-- Welcome Image 2 --}}
             <div class="flex flex-col md:flex-row-reverse items-center gap-6">
                 <div class="w-full md:w-1/2">
                     <img src="{{ asset('images/z3.jpg') }}" 
@@ -178,7 +163,6 @@
                 </div>
             </div>
 
-            {{-- Welcome Image 3 --}}
             <div class="flex flex-col md:flex-row items-center gap-6">
                 <div class="w-full md:w-1/2">
                     <img src="{{ asset('images/z2.jpg') }}" 

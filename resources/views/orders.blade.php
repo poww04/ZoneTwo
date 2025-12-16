@@ -99,7 +99,6 @@
         </div>
 
         @if($orders->count() === 0)
-            {{-- Empty Orders --}}
             <div class="bg-white border-2 border-black rounded-lg p-12 text-center">
                 <svg class="mx-auto h-24 w-24 text-black mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -142,7 +141,6 @@
                             </div>
                         </div>
 
-                        {{-- Payment Method --}}
                         <div class="mb-4">
                             <p class="text-sm text-black font-medium mb-1">Payment Method:</p>
                             <p class="text-base font-bold text-black">
@@ -150,7 +148,6 @@
                             </p>
                         </div>
 
-                        {{-- Order Items --}}
                         <div class="mb-4">
                             <h4 class="text-lg font-bold text-black mb-3">Order Items</h4>
                             <div class="space-y-3">
@@ -173,7 +170,6 @@
                                             @endif
                                         </div>
 
-                                        {{-- Product Info --}}
                                         <div class="flex-grow w-full md:w-auto text-center md:text-left">
                                             <h5 class="text-lg font-bold text-black mb-1">{{ $item->product->name }}</h5>
                                             <div class="flex flex-wrap justify-center md:justify-start items-center gap-4">
@@ -188,7 +184,6 @@
                                             </div>
                                         </div>
 
-                                        {{-- Item Total --}}
                                         <div class="text-center md:text-right w-full md:w-auto">
                                             <p class="text-sm text-black font-medium mb-1">Item Total</p>
                                             <p class="text-xl font-bold text-black">₱{{ number_format($item->quantity * $item->price, 2) }}</p>
@@ -198,7 +193,6 @@
                             </div>
                         </div>
 
-                        {{-- Payment Screenshot (if GCash) --}}
                         @if($order->payment_method === 'gcash' && $order->payment_screenshot)
                             <div class="mt-4 pt-4 border-t-2 border-black">
                                 <p class="text-sm text-black font-medium mb-2">Payment Screenshot:</p>
@@ -210,7 +204,6 @@
                             </div>
                         @endif
 
-                        {{-- Cancel Button (only for pending orders) --}}
                         @if($order->status === 'pending')
                             <div class="mt-6 pt-4 border-t-2 border-black">
                                 <form method="POST" action="{{ route('orders.cancel', $order->id) }}" onsubmit="return confirm('Are you sure you want to cancel this order?');">
@@ -229,7 +222,7 @@
     </div>
 </div>
 
-{{-- Image Modal --}}
+
 <div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4" onclick="closeImageModal()">
     <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto" onclick="event.stopPropagation()">
         <div class="sticky top-0 bg-white border-b-2 border-black px-6 py-4 flex justify-between items-center">
@@ -256,7 +249,6 @@ function closeImageModal() {
     document.body.style.overflow = 'auto';
 }
 
-// Close modal on Escape key
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         closeImageModal();

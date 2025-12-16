@@ -5,7 +5,6 @@
 
 <div class="min-h-screen bg-white">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {{-- Header --}}
         <div class="mb-8">
             <h1 class="text-4xl font-bold text-black mb-2">Your Cart</h1>
             <p class="text-black">Review your items before checkout</p>
@@ -24,7 +23,6 @@
                 </a>
             </div>
         @else
-            {{-- Cart Items --}}
             <div class="space-y-4 mb-8">
                 @foreach($cart->items as $item)
                     <div class="bg-white border-2 border-black rounded-lg p-6 transition-all">
@@ -45,7 +43,6 @@
                                 @endif
                             </div>
 
-                            {{-- Product Info --}}
                             <div class="flex-grow w-full md:w-auto">
                                 <h3 class="text-xl font-bold text-black mb-2">{{ $item->product->name }}</h3>
                                 <p class="text-sm text-black mb-4">{{ $item->product->description ? Str::limit($item->product->description, 100) : 'No description available.' }}</p>
@@ -68,7 +65,6 @@
                                 </div>
                             </div>
 
-                            {{-- Total & Actions --}}
                             <div class="flex flex-col items-end gap-4 w-full md:w-auto">
                                 <div class="text-right">
                                     <p class="text-sm text-black font-medium mb-1">Item Total</p>
@@ -111,7 +107,6 @@
                 @endforeach
             </div>
 
-            {{-- Order Summary --}}
             <div class="bg-white border-2 border-black rounded-lg p-6">
                 <h2 class="text-2xl font-bold text-black mb-6">Order Summary</h2>
                 

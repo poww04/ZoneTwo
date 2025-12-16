@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Order;
 use App\Models\ProductSize;
+use App\Models\ProductImage;
 
 class AdminController extends Controller
 {
@@ -43,30 +44,52 @@ class AdminController extends Controller
 
     public function storeProduct(Request $request)
     {
+        $images = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                if ($image && $image->isValid()) {
+                    $images[] = $image;
+                }
+            }
+        }
+
         $request->validate([
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
             'description' => 'required|string',  
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'sizes' => 'required|array|min:1',
             'sizes.*.size' => 'required|string|max:255',
             'sizes.*.stock' => 'required|integer|min:0',
         ]);
 
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('products', 'public'); 
-        } else {
-            $imagePath = null;
+        if (count($images) < 1) {
+            return redirect()->back()->withErrors(['images' => 'At least one image is required.'])->withInput();
+        }
+        if (count($images) > 2) {
+            return redirect()->back()->withErrors(['images' => 'Maximum 2 images allowed.'])->withInput();
         }
 
-        // Calculate total stock from sizes
+        foreach ($images as $image) {
+            if (!in_array($image->getMimeType(), ['image/jpeg', 'image/png', 'image/jpg'])) {
+                return redirect()->back()->withErrors(['images' => 'Images must be jpeg, png, or jpg format.'])->withInput();
+            }
+            if ($image->getSize() > 2048 * 1024) {
+                return redirect()->back()->withErrors(['images' => 'Each image must be less than 2MB.'])->withInput();
+            }
+        }
+
         $totalStock = 0;
         if ($request->has('sizes')) {
             foreach ($request->sizes as $sizeData) {
                 $totalStock += (int)($sizeData['stock'] ?? 0);
             }
+        }
+
+        $firstImagePath = null;
+        if (count($images) > 0) {
+            $firstImagePath = $images[0]->store('products', 'public');
         }
 
         $product = Product::create([
@@ -75,8 +98,17 @@ class AdminController extends Controller
             'description' => $request->description,
             'price' => $request->price,
             'stock' => $totalStock,
-            'image' => $imagePath, 
+            'image' => $firstImagePath, 
         ]);
+
+        foreach ($images as $index => $image) {
+            $imagePath = $image->store('products', 'public');
+            ProductImage::create([
+                'product_id' => $product->id,
+                'image_path' => $imagePath,
+                'order' => $index,
+            ]);
+        }
 
         // Create product sizes
         if ($request->has('sizes')) {
@@ -113,8 +145,6 @@ class AdminController extends Controller
         ]);
 
         $totalStock = 0;
-
-        // Update each size's stock
         foreach ($request->sizes as $sizeData) {
             $size = ProductSize::find($sizeData['id']);
             if ($size && $size->product_id == $product->id) {
@@ -124,7 +154,6 @@ class AdminController extends Controller
             }
         }
 
-        // Update product total stock
         $product->stock = $totalStock;
         $product->save();
 
@@ -144,34 +173,26 @@ class AdminController extends Controller
         }
 
         DB::transaction(function() use ($order) {
-            // Load order items with product and productSize relationships
             $order->load('items.product', 'items.productSize');
 
             foreach($order->items as $item){
-                // Refresh product to get latest data
                 $product = Product::find($item->product_id);
                 
-                // If order item has a specific size, deduct from that size's stock
                 if($item->product_size_id){
-                    // Refresh the ProductSize model to get latest stock
                     $size = ProductSize::find($item->product_size_id);
                     if($size && $size->product_id == $product->id){
-                        // Deduct from size stock
                         $size->stock = max(0, $size->stock - $item->quantity);
                         $size->save();
                         
-                        // Update product total stock by recalculating from all sizes
                         $product->load('sizes');
                         $totalStock = $product->sizes->sum('stock');
                         $product->stock = $totalStock;
                         $product->save();
                     } else {
-                        // If size not found or doesn't match product, fallback to product total stock
                         $product->stock = max(0, $product->stock - $item->quantity);
                         $product->save();
                     }
                 } else {
-                    // Fallback: if no size specified, deduct from product total stock
                     $product->stock = max(0, $product->stock - $item->quantity);
                     $product->save();
                 }
@@ -190,7 +211,6 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Order cannot be declined.');
         }
 
-        // Update order status to declined
         $order->status = 'declined';
         $order->save();
 
@@ -203,7 +223,6 @@ class AdminController extends Controller
         
         $query = Order::with('user', 'items.product', 'items.productSize')->latest();
         
-        // Filter by status if provided
         if ($selectedStatus !== 'all') {
             $query->where('status', $selectedStatus);
         }

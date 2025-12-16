@@ -12,7 +12,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Modify the enum to include 'declined'
         DB::statement("ALTER TABLE orders MODIFY COLUMN status ENUM('pending', 'cancelled', 'declined', 'confirm', 'on deliver', 'complete') DEFAULT 'pending'");
     }
 
@@ -21,7 +20,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Revert back to original enum (without declined)
         DB::statement("ALTER TABLE orders MODIFY COLUMN status ENUM('pending', 'cancelled', 'confirm', 'on deliver', 'complete') DEFAULT 'pending'");
     }
 };
