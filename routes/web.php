@@ -43,11 +43,18 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    
     Route::get('/categories/create', [AdminController::class, 'createCategory'])->name('categories.create');
-    Route::post('/categories', [AdminController::class, 'storeCategory'])->name('store');
-    Route::get('/products/create', [AdminController::class, 'createProduct'])->name('products.create');
     Route::post('/categories', [AdminController::class, 'storeCategory'])->name('categories.store');
+    Route::get('/categories/{category}/edit', [AdminController::class, 'editCategory'])->name('categories.edit');
+    Route::put('/categories/{category}', [AdminController::class, 'updateCategory'])->name('categories.update');
+    Route::delete('/categories/{category}', [AdminController::class, 'deleteCategory'])->name('categories.delete');
+    
+    Route::get('/products/create', [AdminController::class, 'createProduct'])->name('products.create');
     Route::post('/products', [AdminController::class, 'storeProduct'])->name('products.store');
+    Route::get('/products/{product}/edit', [AdminController::class, 'editProduct'])->name('products.edit');
+    Route::put('/products/{product}', [AdminController::class, 'updateProduct'])->name('products.update');
+    Route::delete('/products/{product}', [AdminController::class, 'deleteProduct'])->name('products.delete');
     Route::get('/products/restock', [AdminController::class, 'restockProduct'])->name('products.restock');
     Route::get('/products/{product}/restock', [AdminController::class, 'showRestockForm'])->name('products.restock.form');
     Route::post('/products/{product}/restock', [AdminController::class, 'updateStock'])->name('products.restock.update');

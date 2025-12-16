@@ -15,7 +15,8 @@ class AdminController extends Controller
     public function index()
     {
         $products = Product::with('category', 'sizes')->latest()->get();
-        return view('admin.dashboard', compact('products'));
+        $categories = Category::withCount('products')->latest()->get();
+        return view('admin.dashboard', compact('products', 'categories'));
     }
     public function storeCategory(Request $request)
     {
@@ -242,5 +243,79 @@ class AdminController extends Controller
         $order->save();
 
         return redirect()->back()->with('success', 'Order status updated successfully.');
+    }
+
+    public function editCategory(Category $category)
+    {
+        return view('admin.edit-category', compact('category'));
+    }
+
+    public function updateCategory(Request $request, Category $category)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
+        ]);
+
+        $category->update([
+            'name' => $request->name,
+        ]);
+
+        return redirect()->route('admin.dashboard')->with('success', 'Category updated successfully!');
+    }
+
+    public function deleteCategory(Category $category)
+    {
+        if ($category->products()->count() > 0) {
+            return redirect()->back()->with('error', 'Cannot delete category with existing products. Please delete or reassign products first.');
+        }
+
+        $category->delete();
+        return redirect()->route('admin.dashboard')->with('success', 'Category deleted successfully!');
+    }
+
+    public function editProduct(Product $product)
+    {
+        $product->load('category');
+        $categories = Category::all();
+        return view('admin.edit-product', compact('product', 'categories'));
+    }
+
+    public function updateProduct(Request $request, Product $product)
+    {
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+        ]);
+
+        $product->update([
+            'category_id' => $request->category_id,
+            'name' => $request->name,
+            'description' => $request->description,
+            'price' => $request->price,
+        ]);
+
+        return redirect()->route('admin.dashboard')->with('success', 'Product updated successfully!');
+    }
+
+    public function deleteProduct(Product $product)
+    {
+        foreach ($product->images as $image) {
+            if (file_exists(storage_path('app/public/' . $image->image_path))) {
+                unlink(storage_path('app/public/' . $image->image_path));
+            }
+            $image->delete();
+        }
+
+        if ($product->image && file_exists(storage_path('app/public/' . $product->image))) {
+            unlink(storage_path('app/public/' . $product->image));
+        }
+
+        $product->sizes()->delete();
+
+        $product->delete();
+
+        return redirect()->route('admin.dashboard')->with('success', 'Product deleted successfully!');
     }
 }
